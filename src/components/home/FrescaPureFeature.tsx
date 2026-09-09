@@ -30,13 +30,13 @@ export function FrescaPureFeature() {
             </div>
           </div>
           <div className="order-1 lg:order-2 lg:col-span-5">
-            <div className="relative aspect-[3/4] overflow-hidden">
+            <div className="relative mx-auto aspect-[938/953] w-full max-w-[460px] overflow-hidden bg-[var(--color-water-tint)]">
               <Image
                 src="/assets/products/agua-frescapure-main.jpg"
                 alt="Filtro de ducha FrescaPure™ instalado en la regadera"
                 fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-contain"
+                sizes="(max-width: 1024px) 90vw, 460px"
               />
             </div>
           </div>
