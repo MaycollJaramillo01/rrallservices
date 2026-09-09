@@ -1,16 +1,56 @@
 import type { Metadata, Viewport } from "next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppBubble } from "@/components/layout/WhatsAppBubble";
 import { siteConfig } from "@/config/site";
+import { JsonLd, localBusinessSchema, webSiteSchema } from "@/lib/structured-data";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "RR All Services | Distribuidor Autorizado de Royal Prestige®",
-    template: "%s | RR All Services",
+    default: "Royal Prestige® en New York | RR All Services, Distribuidor Autorizado",
+    template: "%s | RR All Services New York",
   },
-  description: "Descubra sistemas premium Royal Prestige® para cocina, agua y hogar en New York.",
+  description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.legalName,
+  keywords: [
+    "Royal Prestige New York",
+    "distribuidor autorizado Royal Prestige",
+    "ollas Royal Prestige New York",
+    "purificador de agua Royal Prestige",
+    "FrescaFlow",
+    "FrescaPure filtro de ducha",
+    "filtración de aire para el hogar",
+    "demostración Royal Prestige a domicilio",
+    "RR All Services",
+  ],
+  alternates: { canonical: siteConfig.url },
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    title: "Royal Prestige® en New York | RR All Services",
+    description: siteConfig.description,
+    images: [`${siteConfig.url}/og.jpg`],
+  },
+  twitter: { card: "summary_large_image", images: [`${siteConfig.url}/og.jpg`] },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
+  category: "Home & Kitchen",
+  other: {
+    "geo.region": `${siteConfig.country}-${siteConfig.region}`,
+    "geo.placename": siteConfig.city,
+    "geo.position": `${siteConfig.latitude};${siteConfig.longitude}`,
+    ICBM: `${siteConfig.latitude}, ${siteConfig.longitude}`,
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#FFFFFF", width: "device-width", initialScale: 1 };
@@ -27,32 +67,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body suppressHydrationWarning className="bg-[var(--color-pure-white)]">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "LocalBusiness",
-              name: siteConfig.name,
-              legalName: siteConfig.legalName,
-              description: siteConfig.description,
-              url: siteConfig.url,
-              telephone: siteConfig.phone,
-              email: siteConfig.email,
-              areaServed: siteConfig.serviceArea,
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: siteConfig.address,
-                addressLocality: "New York",
-                addressCountry: "US",
-              },
-              brand: { "@type": "Brand", name: "Royal Prestige®" },
-            }),
-          }}
-        />
+        <JsonLd data={[localBusinessSchema(), webSiteSchema()]} />
         <Header />
         <div className="pt-16 lg:pt-20">{children}</div>
         <Footer />
+        <WhatsAppBubble />
       </body>
     </html>
   );

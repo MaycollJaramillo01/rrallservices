@@ -6,12 +6,15 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { FAQAccordion } from "@/components/ui/FAQAccordion";
 import { siteConfig } from "@/config/site";
+import { createMetadata } from "@/config/seo";
+import { JsonLd, faqSchema } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
-  title: "Preguntas frecuentes",
+export const metadata: Metadata = createMetadata({
+  title: "Preguntas frecuentes sobre Royal Prestige® en New York",
   description:
-    "Respuestas sobre las demostraciones, los sistemas Royal Prestige® y cómo trabaja RR All Services en New York.",
-};
+    "Cómo son las demostraciones, por qué no publicamos precios, qué zonas de New York atendemos y cómo funciona la garantía Royal Prestige®.",
+  pathname: "/preguntas-frecuentes",
+});
 
 const faqs = [
   {
@@ -87,20 +90,7 @@ export default function FAQPage() {
           </div>
         </div>
       </Container>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: faqs.map((faq) => ({
-              "@type": "Question",
-              name: faq.question,
-              acceptedAnswer: { "@type": "Answer", text: faq.answer },
-            })),
-          }),
-        }}
-      />
+      <JsonLd data={faqSchema(faqs)} />
     </Section>
   );
 }

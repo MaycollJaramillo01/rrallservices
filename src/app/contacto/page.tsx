@@ -5,12 +5,14 @@ import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { LeadForm } from "@/components/forms/LeadForm";
 import { siteConfig } from "@/config/site";
+import { createMetadata } from "@/config/seo";
 
-export const metadata: Metadata = {
-  title: "Contacto",
+export const metadata: Metadata = createMetadata({
+  title: "Contacto en New York",
   description:
-    "Hable con RR All Services, Distribuidor Autorizado Independiente de Royal Prestige® en New York.",
-};
+    "Hable con RR All Services, Distribuidor Autorizado Independiente de Royal Prestige® en New York. Teléfono, correo y dirección para agendar su demostración.",
+  pathname: "/contacto",
+});
 
 export default function ContactoPage() {
   const tel = siteConfig.phone.replace(/[^0-9+]/g, "");

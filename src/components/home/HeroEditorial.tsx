@@ -5,8 +5,8 @@ import { Container } from "@/components/ui/Container";
 // Vídeo oficial de Royal Prestige® servido con su propio reproductor: no se
 // descarga ni se re-aloja. Va de fondo a sangre en escritorio; en móvil manda
 // la fotografía, porque el reproductor pesa y allí el autoplay es poco fiable.
-const HERO_VIDEO_ID = "m7tI3WypyVQ";
-const HERO_VIDEO_TITLE = "Royal Prestige® Deluxe Easy Release Cookware";
+const HERO_VIDEO_ID = "UZ9L6KW3LpM";
+const HERO_VIDEO_TITLE = "Royal Prestige® Nunca dejas de sorprenderte";
 
 const videoParams = new URLSearchParams({
   autoplay: "1",

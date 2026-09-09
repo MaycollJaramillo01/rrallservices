@@ -6,12 +6,15 @@ import { Text } from "@/components/ui/Text";
 import { LeadForm } from "@/components/forms/LeadForm";
 import { getProduct } from "@/data/products";
 import { siteConfig } from "@/config/site";
+import { createMetadata } from "@/config/seo";
+import { JsonLd, serviceSchema } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
-  title: "Solicitar demostración",
+export const metadata: Metadata = createMetadata({
+  title: "Agendar demostración de Royal Prestige® en New York",
   description:
-    "Agende una demostración privada de los sistemas Royal Prestige® en su hogar, sin compromiso.",
-};
+    "Agende una demostración privada de los sistemas Royal Prestige® en su hogar de New York: cocina, purificación de agua y filtración de aire. Sin compromiso de compra.",
+  pathname: "/demostraciones",
+});
 
 const steps = [
   {
@@ -46,6 +49,7 @@ export default async function DemostracionesPage({
 
   return (
     <>
+      <JsonLd data={serviceSchema()} />
       <Section padding="lg">
         <Container padding="lg">
           <span className="mb-4 block text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">

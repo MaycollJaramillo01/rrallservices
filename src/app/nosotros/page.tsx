@@ -8,12 +8,14 @@ import { Text } from "@/components/ui/Text";
 import { companyData } from "@/data/company";
 import { verificationData } from "@/data/verification";
 import { siteConfig } from "@/config/site";
+import { createMetadata } from "@/config/seo";
 
-export const metadata: Metadata = {
-  title: "Nuestra historia",
+export const metadata: Metadata = createMetadata({
+  title: "Quiénes somos: distribuidor de Royal Prestige® en New York",
   description:
-    "RR All Services: cinco años presentando los sistemas Royal Prestige® a familias de New York.",
-};
+    "Cinco años presentando los sistemas Royal Prestige® a familias de New York. Conozca a RR All Services y su forma de trabajar.",
+  pathname: "/nosotros",
+});
 
 const stats = [
   verificationData.trajectoryStats.presentations,

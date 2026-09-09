@@ -1,4 +1,7 @@
 import { Metadata } from "next";
+import { createMetadata } from "@/config/seo";
+import { JsonLd, breadcrumbSchema } from "@/lib/structured-data";
+import { siteConfig } from "@/config/site";
 import { notFound } from "next/navigation";
 import { categories } from "@/data/categories";
 import { getProductsByCategory } from "@/data/products";
@@ -18,7 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = categories.find((c) => c.slug === slug);
   if (!category) return { title: "Categoría no encontrada" };
-  return { title: category.name, description: category.description };
+  return createMetadata({
+    title: `${category.name} Royal Prestige® en New York`,
+    description: `${category.description}. Distribuidor Autorizado en ${siteConfig.serviceArea}.`,
+    pathname: `/categorias/${category.slug}`,
+  });
 }
 
 export default async function CategoryPage({ params }: Props) {
@@ -30,6 +37,13 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <main>
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Inicio", path: "/" },
+          { name: "Productos", path: "/productos" },
+          { name: category.name, path: `/categorias/${category.slug}` },
+        ])}
+      />
       <div className="mx-auto max-w-[1480px] px-6 py-16 sm:px-8 lg:px-[64px] xl:px-[88px]">
         <span className="mb-4 block text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
           {category.label}

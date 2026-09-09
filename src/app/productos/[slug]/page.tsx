@@ -1,4 +1,7 @@
 import { Metadata } from "next";
+import { createMetadata } from "@/config/seo";
+import { JsonLd, breadcrumbSchema, productSchema } from "@/lib/structured-data";
+import { siteConfig } from "@/config/site";
 import { notFound } from "next/navigation";
 import { getProduct, getRelatedProducts, products } from "@/data/products";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -18,10 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
   if (!product) return { title: "Producto no encontrado" };
-  return {
-    title: product.name,
-    description: product.shortDescription,
-  };
+  return createMetadata({
+    title: `${product.name} en New York`,
+    description: `${product.shortDescription} Distribuidor Autorizado Royal Prestige® en ${siteConfig.serviceArea}. Solicite una demostración privada sin compromiso.`,
+    pathname: `/productos/${product.slug}`,
+    images: product.images.slice(0, 1).map((i) => i.src),
+  });
 }
 
 export default async function ProductPage({ params }: Props) {
@@ -33,6 +38,16 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main>
+      <JsonLd
+        data={[
+          productSchema(product),
+          breadcrumbSchema([
+            { name: "Inicio", path: "/" },
+            { name: "Productos", path: "/productos" },
+            { name: product.name, path: `/productos/${product.slug}` },
+          ]),
+        ]}
+      />
       <div className="mx-auto max-w-[1480px] px-6 py-8 sm:px-8 lg:px-[64px] xl:px-[88px]">
         <Breadcrumbs
           items={[

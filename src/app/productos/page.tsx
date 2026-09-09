@@ -6,11 +6,14 @@ import { Text } from "@/components/ui/Text";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { getProducts, getProductsByCategory } from "@/data/products";
 import { categories } from "@/data/categories";
+import { createMetadata } from "@/config/seo";
 
-export const metadata: Metadata = {
-  title: "Productos",
-  description: "Descubra los sistemas premium Royal Prestige® para cocina, agua y hogar.",
-};
+export const metadata: Metadata = createMetadata({
+  title: "Productos Royal Prestige® en New York",
+  description:
+    "Catálogo Royal Prestige® en New York: batería de cocina de acero quirúrgico, purificador de agua FrescaFlow™, filtro de ducha FrescaPure™ y filtración de aire.",
+  pathname: "/productos",
+});
 
 export default async function ProductosPage({
   searchParams,
