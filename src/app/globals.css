@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+
+  /* Tono de marca. Sustituye al casi-negro anterior (#11161A). */
+  --color-ink: #356fc0;
+  --color-pure-white: #ffffff;
+  --color-steel: #64748b;
+  --color-graphite: #2e3d52;
+  --color-deep-royal-blue: #1b3a6b;
+  --color-royal-accent-blue: #2563eb;
+  --color-mist: #f5f7fa;
+  --color-warm-porcelain: #faf8f5;
+  --color-water-tint: #eff6ff;
+}
+
+/* Nada se pinta en negro puro: el texto corrido es azul grafito y los
+   titulares toman el tono de marca. Va en @layer base a propósito: el CSS sin
+   capa gana a las utilidades de Tailwind pase lo que pase con la
+   especificidad, y entonces ningún text-* podría recolorear un titular. */
+@layer base {
+  body {
+    color: var(--color-graphite);
+  }
+
+  :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--color-ink);
+  }
+
+  footer :where(h1, h2, h3, h4, h5, h6) {
+    color: inherit;
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+
+# Variables de entorno (nunca se versionan)
+.env
+.env*.local
+
+.DS_Store
+.cache
+.npm
+.eslintcache
+*.tgz
+**/*.map
