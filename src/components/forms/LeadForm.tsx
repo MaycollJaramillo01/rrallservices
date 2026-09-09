@@ -18,7 +18,10 @@ interface LeadFormProps {
 }
 
 const inputClass =
-  "w-full px-4 py-3 border border-[var(--color-steel)] bg-transparent focus:border-[var(--color-ink)] focus:outline-none transition-colors text-base";
+  "w-full rounded-none border border-[var(--color-steel)]/50 bg-[var(--color-pure-white)] px-4 py-3.5 text-base text-[var(--color-graphite)] transition-colors placeholder:text-[var(--color-steel)] focus:border-[var(--color-ink)] focus:ring-2 focus:ring-[var(--color-ink)]/20 focus:outline-none";
+
+const labelClass =
+  "mb-2 block text-[11px] font-medium tracking-[0.12em] text-[var(--color-steel)] uppercase";
 
 export function LeadForm({
   fuente,
@@ -82,7 +85,7 @@ export function LeadForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-nombre`}>
+          <label className={labelClass} htmlFor={`${fuente}-nombre`}>
             Nombre
           </label>
           <input
@@ -95,7 +98,7 @@ export function LeadForm({
           {errors.nombre && <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>}
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-apellido`}>
+          <label className={labelClass} htmlFor={`${fuente}-apellido`}>
             Apellido
           </label>
           <input
@@ -112,7 +115,7 @@ export function LeadForm({
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-email`}>
+          <label className={labelClass} htmlFor={`${fuente}-email`}>
             Email
           </label>
           <input
@@ -125,7 +128,7 @@ export function LeadForm({
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-telefono`}>
+          <label className={labelClass} htmlFor={`${fuente}-telefono`}>
             Teléfono
           </label>
           <input
@@ -141,7 +144,7 @@ export function LeadForm({
         </div>
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-producto`}>
+        <label className={labelClass} htmlFor={`${fuente}-producto`}>
           Producto de interés
         </label>
         <select id={`${fuente}-producto`} {...register("productoInteres")} className={inputClass}>
@@ -155,7 +158,7 @@ export function LeadForm({
         </select>
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium" htmlFor={`${fuente}-mensaje`}>
+        <label className={labelClass} htmlFor={`${fuente}-mensaje`}>
           Mensaje (opcional)
         </label>
         <textarea
@@ -165,8 +168,8 @@ export function LeadForm({
           className={`${inputClass} resize-none`}
         />
       </div>
-      <label className="flex cursor-pointer items-start gap-3">
-        <input type="checkbox" required className="mt-1" />
+      <label className="flex cursor-pointer items-start gap-3 border-t border-[var(--color-steel)]/30 pt-6">
+        <input type="checkbox" required className="mt-1 h-4 w-4 accent-[var(--color-ink)]" />
         <span className="text-sm text-[var(--color-graphite)]">
           Acepto que mi información sea utilizada para contactarme y coordinar la atención
           solicitada.
