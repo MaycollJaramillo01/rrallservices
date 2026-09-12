@@ -34,7 +34,7 @@ export function ProductDiscoveryRail() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Link
-            href={`/productos/${lead.slug}`}
+            href={`/demostraciones?producto=${lead.slug}`}
             className="group relative flex aspect-[4/3] flex-col justify-end overflow-hidden bg-[var(--color-mist)] lg:col-span-2 lg:aspect-auto lg:min-h-[520px]"
           >
             <Image
@@ -63,7 +63,7 @@ export function ProductDiscoveryRail() {
             {rest.map((product) => (
               <Link
                 key={product.id}
-                href={`/productos/${product.slug}`}
+                href={`/demostraciones?producto=${product.slug}`}
                 className="group flex items-center gap-4 border border-[var(--color-steel)]/40 bg-[var(--color-pure-white)] p-3 transition-colors hover:border-[var(--color-ink)]"
               >
                 <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden bg-[var(--color-mist)]">

@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
-import { LeadForm } from "@/components/forms/LeadForm";
+import { GhlDemoForm } from "@/components/forms/GhlDemoForm";
 import { getProduct } from "@/data/products";
 import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/config/seo";
@@ -101,7 +101,7 @@ export default async function DemostracionesPage({
             </div>
             <div className="lg:col-span-7">
               <div className="bg-[var(--color-pure-white)] p-6 sm:p-10">
-                <LeadForm fuente="pagina-demostraciones" defaultProduct={preselected?.slug} />
+                <GhlDemoForm />
               </div>
             </div>
           </div>
