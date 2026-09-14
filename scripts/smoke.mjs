@@ -28,6 +28,7 @@ const lead = {
   email: "smoke@example.com",
   telefono: "9296704101",
   productoInteres: "frescaflow",
+  consentimiento: true,
   fuente: "smoke-test",
 };
 

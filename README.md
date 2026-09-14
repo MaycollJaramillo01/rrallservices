@@ -24,6 +24,7 @@ npm run dev
 | `npm run lint`     | ESLint                                                          |
 | `npm run format`   | Prettier                                                        |
 | `npm run smoke`    | Verifica rutas y captación de leads contra el servidor en marcha|
+| `npm run check:ghl`| Verifica la entrega a GHL con un `fetch` simulado (no toca la cuenta)|
 
 ## Variables de entorno
 
@@ -36,7 +37,8 @@ entorno para actualizarlos en todas las páginas.
 | `NEXT_PUBLIC_PHONE`    | Teléfono publicado y enlaces `tel:`                           |
 | `NEXT_PUBLIC_EMAIL`    | Email publicado y enlaces `mailto:`                           |
 | `NEXT_PUBLIC_ADDRESS`  | Dirección publicada                                            |
-| `RESEND_API_KEY`       | Envío del lead por correo. **Sin ella el lead solo se registra en los logs del servidor.** |
+| `GHL_PRIVATE_INTEGRATION` | Token privado de GHL (solo servidor). Crea contacto, nota y oportunidad de `/contacto` y la home. |
+| `RESEND_API_KEY`       | Envío del lead por correo. **Sin esta ni la de GHL, el lead solo se registra en los logs del servidor.** |
 | `LEAD_FROM_EMAIL`      | Remitente del aviso de lead (dominio verificado en Resend)     |
 | `LEAD_TO_EMAIL`        | Destinatario del aviso (por defecto, `NEXT_PUBLIC_EMAIL`)      |
 
@@ -52,9 +54,19 @@ GoHighLevel como proveedor, y su script guarda una clave `embedded_iframe_…` e
 del visitante. Conviene que la política de privacidad lo refleje (hoy el punto 7 afirma que el sitio
 no usa seguimiento de terceros).
 
-El formulario de **`/contacto`** y el de la sección final de la **home** usan `LeadForm` y envían a
-`POST /api/leads`, que valida con Zod, limita a 5 envíos por minuto e IP y entrega el lead por
-correo vía Resend.
+El formulario de **`/contacto`** (variante `contacto`: motivo y mensaje obligatorios) y el de la
+sección final de la **home** usan `LeadForm` y envían a `POST /api/leads`, que valida con Zod
+(incluido el consentimiento de privacidad), limita a 5 envíos por minuto e IP y entrega el lead por
+dos canales a la vez:
+
+- **GoHighLevel** (`src/lib/ghl.ts`): crea o actualiza el contacto, añade la etiqueta
+  `website-contacto` o `website-home-demo` (y `sms-consentimiento-web` si acepta SMS), guarda el
+  mensaje en una nota y abre una oportunidad en «01 Nuevo Prospecto» si no tiene una abierta. Los
+  clientes existentes (motivo «Ya soy cliente») no entran al embudo.
+- **Correo** vía Resend a `LEAD_TO_EMAIL`.
+
+Basta con que un canal reciba el lead para responder OK; si todos los configurados fallan, el
+visitante ve el error con el teléfono.
 
 El límite de envíos vive en memoria del proceso: con varias instancias, cada una lleva su propia
 cuenta. Suficiente para el volumen actual; si algún día hace falta, se cambia por un contador
@@ -75,7 +87,7 @@ public/assets/    Imágenes del sitio
 
 Datos heredados del sitio anterior que conviene confirmar antes de publicar (ver `info.txt`):
 
-- **Email** `rrallservicves@gmail.com` — posible errata de `services`.
+- **Email** `rrallservicves@gmail.com` — confirmado como correo de la dueña (no es errata).
 - **Dirección** `5030 Broadwey…` — posible errata de `Broadway`.
 - **WhatsApp** — el enlace anterior estaba pausado, así que el sitio no lo publica. Con un número
   activo se añade al header y al footer.

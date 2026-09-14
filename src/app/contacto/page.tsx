@@ -77,6 +77,7 @@ export default function ContactoPage() {
               <div className="mt-6">
                 <LeadForm
                   fuente="pagina-contacto"
+                  variant="contacto"
                   submitLabel="Enviar mensaje"
                   successTitle="Gracias. Hemos recibido su mensaje."
                   successBody="Le responderemos a la brevedad."
