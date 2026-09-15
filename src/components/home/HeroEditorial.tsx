@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { GhlBookingCalendar } from "@/components/forms/GhlEmbed";
 
 export function HeroEditorial() {
   return (
@@ -29,8 +30,11 @@ export function HeroEditorial() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/15" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
 
-      <Container padding="lg" className="relative w-full py-20 lg:py-24">
-        <div className="max-w-2xl">
+      <Container
+        padding="lg"
+        className="relative grid w-full grid-cols-1 items-center gap-12 py-20 lg:grid-cols-12 lg:py-24"
+      >
+        <div className="max-w-2xl lg:col-span-7">
           <span className="mb-6 block text-[11px] tracking-[0.2em] text-white/75 uppercase">
             RR ALL SERVICES · NEW YORK
           </span>
@@ -58,6 +62,12 @@ export function HeroEditorial() {
               Explorar productos →
             </Link>
           </div>
+        </div>
+
+        {/* Reserva directa en el calendario de GHL. En móvil queda bajo los botones.
+            El widget mide entre 633 y 728px según el ancho; 680 evita el salto. */}
+        <div className="w-full bg-[var(--color-pure-white)] p-2 shadow-[0_8px_30px_rgba(17,22,26,0.25)] lg:col-span-5">
+          <GhlBookingCalendar reservedHeight="h-[680px]" />
         </div>
       </Container>
     </section>

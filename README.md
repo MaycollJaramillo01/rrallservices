@@ -44,15 +44,21 @@ entorno para actualizarlos en todas las páginas.
 
 ## Cómo llegan los formularios
 
-**`/demostraciones`** incrusta el formulario oficial de GoHighLevel
-(`src/components/forms/GhlDemoForm.tsx`): los datos van directo a la subcuenta de GHL y disparan el
-workflow de captación. Es un embed público: no usa claves ni variables de entorno. Para cambiar
-campos o textos se edita el formulario en GHL, no el código.
+**`/demostraciones`** incrusta el formulario oficial de GoHighLevel (`GhlDemoForm`) y el **hero de
+la home**, el calendario de citas «Demostración privada» (`GhlBookingCalendar`, ID
+`xV8bryuKgy4triFXu9S2`). Ambos viven en `src/components/forms/GhlEmbed.tsx`: los datos van directo
+a la subcuenta de GHL, sin claves ni variables de entorno. Campos, textos, duración y horario del
+calendario se editan en GHL, no en el código. Si se edita el calendario por API, `PUT` con campos
+sueltos resetea duración, intervalo y horario: hay que mandar la configuración completa.
 
-Al ser un embed de GHL, los datos del formulario de `/demostraciones` los recibe y almacena
-GoHighLevel como proveedor, y su script guarda una clave `embedded_iframe_…` en el `localStorage`
-del visitante. Conviene que la política de privacidad lo refleje (hoy el punto 7 afirma que el sitio
-no usa seguimiento de terceros).
+`GhlEmbed` toma el alto de los mensajes del propio iframe y lo mantiene visible y en flujo aunque
+`form_embed.js` intente ocultarlo: ese script está pensado para páginas estáticas y, al volver a la
+página sin recargar (o a veces en carga directa), dejaba el formulario recortado o el calendario en
+blanco.
+
+Al ser embeds de GHL, los datos los recibe y almacena GoHighLevel como proveedor, y su script guarda
+una clave `embedded_iframe_…` en el `localStorage` del visitante. Conviene que la política de
+privacidad lo refleje (hoy el punto 7 afirma que el sitio no usa seguimiento de terceros).
 
 El formulario de **`/contacto`** (variante `contacto`: motivo y mensaje obligatorios) y el de la
 sección final de la **home** usan `LeadForm` y envían a `POST /api/leads`, que valida con Zod

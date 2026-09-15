@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
-import { GhlDemoForm } from "@/components/forms/GhlDemoForm";
+import { GhlDemoForm } from "@/components/forms/GhlEmbed";
 import { getProduct } from "@/data/products";
 import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/config/seo";
