@@ -17,7 +17,7 @@ const lead = {
   fuente: "pagina-contacto",
 };
 
-function fakeGhl({ openOpportunities = [], failOn } = {}) {
+function fakeGhl({ openOpportunities = [], conversations = [{ id: "cv1" }], failOn } = {}) {
   const calls = [];
   const fetch = async (url, init) => {
     const path = url.replace("https://services.leadconnectorhq.com", "");
@@ -28,6 +28,8 @@ function fakeGhl({ openOpportunities = [], failOn } = {}) {
     if (path.startsWith("/opportunities/search")) {
       return Response.json({ opportunities: openOpportunities });
     }
+    if (path.startsWith("/conversations/search")) return Response.json({ conversations });
+    if (path === "/conversations/") return Response.json({ conversation: { id: "cv2" } });
     return Response.json({});
   };
   return { calls, fetch };
@@ -43,7 +45,8 @@ delete process.env.GHL_PRIVATE_INTEGRATION;
 
 process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
 
-// Lead nuevo: contacto, etiqueta, nota y oportunidad en "01 Nuevo Prospecto".
+// Lead nuevo: contacto, etiqueta, nota, oportunidad en "01 Nuevo Prospecto" y
+// mensaje entrante para que salga sin leer en Conversations.
 {
   const ghl = fakeGhl();
   assert.equal(await sendLeadToGhl(lead, ghl.fetch), "sent");
@@ -55,9 +58,17 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
       "POST /contacts/c1/notes",
       "GET /opportunities/search",
       "POST /opportunities/",
+      "GET /conversations/search",
+      "POST /conversations/messages/inbound",
     ],
   );
-  const [upsert, tags, note, search, opportunity] = ghl.calls;
+  const [upsert, tags, note, search, opportunity, conversation, inbound] = ghl.calls;
+  assert.match(conversation.path, /contactId=c1/);
+  assert.equal(inbound.body.type, "Email");
+  assert.equal(inbound.body.conversationId, "cv1");
+  assert.equal(inbound.body.emailFrom, lead.email);
+  assert.match(inbound.body.message, /Mensaje: Quiero información del FrescaFlow/);
+  assert.match(inbound.body.html, /<br>/);
   assert.equal(upsert.auth, "Bearer token-de-prueba");
   assert.equal(upsert.body.phone, "+19295550100");
   assert.deepEqual(upsert.body.customFields, [
@@ -80,11 +91,39 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
   assert.deepEqual(ghl.calls[1].body.tags, ["website-contacto"]);
 }
 
-// Cliente existente: no entra al embudo de venta.
+// Cliente existente: no entra al embudo de venta, pero sí llega a la bandeja.
 {
   const ghl = fakeGhl();
   await sendLeadToGhl({ ...lead, motivo: "cliente" }, ghl.fetch);
   assert.ok(!ghl.calls.some((c) => c.path.startsWith("/opportunities")));
+  assert.ok(ghl.calls.some((c) => c.path === "/conversations/messages/inbound"));
+}
+
+// Contacto sin conversación todavía: se crea antes de dejar el mensaje.
+{
+  const ghl = fakeGhl({ conversations: [] });
+  await sendLeadToGhl(lead, ghl.fetch);
+  const create = ghl.calls.find((c) => c.path === "/conversations/");
+  assert.equal(create.body.contactId, "c1");
+  assert.equal(ghl.calls.at(-1).body.conversationId, "cv2");
+}
+
+// Lo que escribe el visitante no entra como HTML en el CRM.
+{
+  const ghl = fakeGhl();
+  await sendLeadToGhl({ ...lead, mensaje: "<script>alert(1)</script>" }, ghl.fetch);
+  assert.ok(!ghl.calls.at(-1).body.html.includes("<script>"));
+}
+
+// El mensaje es un añadido: si falla, el lead ya está en el CRM y no se pierde.
+{
+  const ghl = fakeGhl({ failOn: "/conversations" });
+  const errors = [];
+  const original = console.error;
+  console.error = (message) => errors.push(message);
+  assert.equal(await sendLeadToGhl(lead, ghl.fetch), "sent");
+  console.error = original;
+  assert.match(errors[0], /Conversations/);
 }
 
 // Un error de GHL se propaga para que /api/leads lo registre.
@@ -93,4 +132,6 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
   await assert.rejects(sendLeadToGhl(lead, ghl.fetch), /respondió 401/);
 }
 
-console.log("ok   entrega a GHL (sin token, lead nuevo, oportunidad existente, cliente, error)");
+console.log(
+  "ok   entrega a GHL (sin token, lead nuevo, oportunidad existente, cliente, conversación, HTML, mensaje fallido, error)",
+);

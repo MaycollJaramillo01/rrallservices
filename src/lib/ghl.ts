@@ -8,6 +8,9 @@ const API = "https://services.leadconnectorhq.com";
 const LOCATION_ID = "BehR3gdBL4V3ftAhMlq7";
 const PIPELINE_ID = "CRD8jCunXLxcucZAvLtV";
 const STAGE_NUEVO_PROSPECTO = "fe78654c-f6e9-47a2-b1b5-cc907c7b350e";
+// Destinatario del email entrante que se guarda en Conversations. Es el correo
+// de la subcuenta: solo se muestra como "para", no se envía ningún mensaje.
+const OWNER_EMAIL = "rrallservicves@gmail.com";
 const FIELD = {
   fuente: "RN2yhPQ9iHEbi5S2KHSw",
   mensaje: "h7BVNHNiXzaMhU0RZwEK",
@@ -29,6 +32,9 @@ const productOptions: Record<string, string> = {
 
 export type GhlLead = LeadSchemaType & { fuente: string };
 
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+
 // 10 dígitos → número de EE. UU. en formato E.164; el resto se deja para que
 // GHL lo interprete con el país de la subcuenta.
 function toE164(phone: string) {
@@ -45,18 +51,23 @@ export async function sendLeadToGhl(
   const token = process.env.GHL_PRIVATE_INTEGRATION;
   if (!token) return "skipped";
 
-  const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
-    const response = await fetchImpl(`${API}${path}`, {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Version: "2021-07-28",
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+
+  const request = (method: string, path: string, body?: unknown) =>
+    fetchImpl(`${API}${path}`, {
       method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Version: "2021-07-28",
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      headers,
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(10_000),
     });
+
+  const call = async <T>(method: string, path: string, body?: unknown): Promise<T> => {
+    const response = await request(method, path, body);
     if (!response.ok) {
       throw new Error(
         `GHL ${method} ${path} respondió ${response.status}: ${await response.text()}`,
@@ -117,6 +128,38 @@ export async function sendLeadToGhl(
         source: "Website",
       });
     }
+  }
+
+  // Conversations solo lista conversaciones con mensajes, así que un lead nuevo
+  // no aparecería en la bandeja. La solicitud se guarda como email entrante: sale
+  // sin leer en Team inbox y no se envía nada a nadie. Es un añadido al CRM, así
+  // que un fallo aquí no puede dar el lead por perdido.
+  try {
+    const { conversations } = await call<{ conversations: { id: string }[] }>(
+      "GET",
+      `/conversations/search?locationId=${LOCATION_ID}&contactId=${contact.id}`,
+    );
+    // GHL crea la conversación junto con el contacto; si todavía no está, se crea.
+    const conversationId =
+      conversations[0]?.id ??
+      (
+        await call<{ conversation: { id: string } }>("POST", "/conversations/", {
+          locationId: LOCATION_ID,
+          contactId: contact.id,
+        })
+      ).conversation.id;
+    await call("POST", "/conversations/messages/inbound", {
+      type: "Email",
+      conversationId,
+      subject: `Solicitud desde el sitio web (${lead.fuente})`,
+      message: note,
+      // El cuerpo se muestra desde `html`; solo con `message` el email sale vacío.
+      html: escapeHtml(note).replaceAll("\n", "<br>"),
+      emailFrom: lead.email,
+      emailTo: OWNER_EMAIL,
+    });
+  } catch (error) {
+    console.error("[lead] no se pudo registrar el mensaje en Conversations", error);
   }
 
   return "sent";
