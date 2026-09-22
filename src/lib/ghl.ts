@@ -1,6 +1,6 @@
-import type { LeadSchemaType } from "@/lib/lead-schema";
+import type { LeadSchemaType, SorteoSchemaType } from "@/lib/lead-schema";
 
-// Entrega de leads de los formularios propios (/contacto y home) a GoHighLevel.
+// Entrega de leads de los formularios propios (/contacto, home y /sorteo) a GoHighLevel.
 // Solo se usa desde /api/leads. El token es GHL_PRIVATE_INTEGRATION, sin prefijo
 // NEXT_PUBLIC_, así que Next nunca lo incluye en el bundle del navegador.
 // Los IDs de abajo identifican la subcuenta y no son secretos.
@@ -30,7 +30,7 @@ const productOptions: Record<string, string> = {
   otros: "Otro",
 };
 
-export type GhlLead = LeadSchemaType & { fuente: string };
+export type GhlLead = (LeadSchemaType | SorteoSchemaType) & { fuente: string };
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
@@ -77,6 +77,8 @@ export async function sendLeadToGhl(
   };
 
   const producto = lead.productoInteres ? productOptions[lead.productoInteres] : undefined;
+  // Opción del campo "Fuente del prospecto"; también es la fuente de la oportunidad.
+  const origen = lead.fuente.startsWith("sorteo") ? "Sorteo / Rifa" : "Website";
 
   const { contact } = await call<{ contact: { id: string } }>("POST", "/contacts/upsert", {
     locationId: LOCATION_ID,
@@ -84,9 +86,10 @@ export async function sendLeadToGhl(
     lastName: lead.apellido,
     email: lead.email,
     phone: toE164(lead.telefono),
-    source: "Website",
+    address1: lead.direccion,
+    source: origen,
     customFields: [
-      { id: FIELD.fuente, field_value: "Website" },
+      { id: FIELD.fuente, field_value: origen },
       ...(lead.mensaje ? [{ id: FIELD.mensaje, field_value: lead.mensaje }] : []),
       ...(producto ? [{ id: FIELD.producto, field_value: producto }] : []),
     ],
@@ -101,6 +104,7 @@ export async function sendLeadToGhl(
   const note = [
     `Solicitud desde el sitio web (${lead.fuente})`,
     lead.motivo && `Motivo: ${lead.motivo}`,
+    lead.direccion && `Dirección: ${lead.direccion}`,
     lead.productoInteres && `Producto: ${producto ?? lead.productoInteres}`,
     lead.mensaje && `Mensaje: ${lead.mensaje}`,
     `Acepta SMS: ${lead.consentimientoSms ? "sí" : "no"}`,
@@ -123,9 +127,9 @@ export async function sendLeadToGhl(
         pipelineId: PIPELINE_ID,
         pipelineStageId: STAGE_NUEVO_PROSPECTO,
         contactId: contact.id,
-        name: `${lead.nombre} ${lead.apellido} - Website`,
+        name: `${lead.nombre} ${lead.apellido} - ${origen}`,
         status: "open",
-        source: "Website",
+        source: origen,
       });
     }
   }
@@ -134,6 +138,9 @@ export async function sendLeadToGhl(
   // no aparecería en la bandeja. La solicitud se guarda como email entrante: sale
   // sin leer en Team inbox y no se envía nada a nadie. Es un añadido al CRM, así
   // que un fallo aquí no puede dar el lead por perdido.
+  // ponytail: el sorteo no pide email, así que sus participantes no llegan a la
+  // bandeja (se filtran por la etiqueta). Si se quieren ahí, registrarlos como SMS.
+  if (!lead.email) return "sent";
   try {
     const { conversations } = await call<{ conversations: { id: string }[] }>(
       "GET",

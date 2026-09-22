@@ -15,6 +15,7 @@ export const leadSchema = z.object({
   apellido: z.string().trim().min(1, "El apellido es obligatorio").max(100),
   email: z.string().trim().email("Email inválido"),
   telefono: z.string().trim().min(7, "Teléfono inválido").max(20),
+  direccion: z.string().trim().max(200).optional(),
   productoInteres: z.string().max(60).optional(),
   motivo: motivo.optional(),
   mensaje: z.string().max(2000).optional(),
@@ -29,4 +30,13 @@ export const contactSchema = leadSchema.extend({
   mensaje: z.string(askMessage).trim().min(10, askMessage).max(2000),
 });
 
+// Sorteo (/sorteo): sin email; la dirección es obligatoria para confirmar la
+// zona y entregar el premio. /api/leads usa este esquema solo con esta fuente.
+export const SORTEO_FUENTE = "sorteo-plancha-innove";
+export const sorteoSchema = leadSchema.extend({
+  email: z.string().trim().email("Email inválido").optional(),
+  direccion: z.string().trim().min(8, "Escriba su dirección completa").max(200),
+});
+
 export type LeadSchemaType = z.infer<typeof leadSchema>;
+export type SorteoSchemaType = z.infer<typeof sorteoSchema>;

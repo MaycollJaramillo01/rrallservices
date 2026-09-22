@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { leadSchema } from "@/lib/lead-schema";
+import { leadSchema, sorteoSchema, SORTEO_FUENTE } from "@/lib/lead-schema";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendLeadToGhl, type GhlLead } from "@/lib/ghl";
 import { siteConfig } from "@/config/site";
 
-const bodySchema = leadSchema.extend({
-  fuente: z.string().max(60).default("desconocida"),
-});
+const bodySchema = z.union([
+  sorteoSchema.extend({ fuente: z.literal(SORTEO_FUENTE) }),
+  leadSchema.extend({ fuente: z.string().max(60).default("desconocida") }),
+]);
 
 function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");

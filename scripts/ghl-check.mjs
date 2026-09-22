@@ -126,6 +126,36 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
   assert.match(errors[0], /Conversations/);
 }
 
+// Sorteo: sin email, con dirección; fuente "Sorteo / Rifa" y sin paso por la bandeja.
+{
+  const ghl = fakeGhl();
+  const { nombre, apellido, telefono, consentimiento, consentimientoSms } = lead;
+  await sendLeadToGhl(
+    {
+      nombre,
+      apellido,
+      telefono,
+      consentimiento,
+      consentimientoSms,
+      direccion: "5030 Broadway Apt 2, New York, NY 10034",
+      fuente: "sorteo-plancha-innove",
+    },
+    ghl.fetch,
+  );
+  const [upsert, tags, note] = ghl.calls;
+  assert.equal(upsert.body.email, undefined);
+  assert.equal(upsert.body.address1, "5030 Broadway Apt 2, New York, NY 10034");
+  assert.equal(upsert.body.source, "Sorteo / Rifa");
+  assert.deepEqual(upsert.body.customFields, [
+    { id: "RN2yhPQ9iHEbi5S2KHSw", field_value: "Sorteo / Rifa" },
+  ]);
+  assert.deepEqual(tags.body.tags, ["website-sorteo-plancha-innove", "sms-consentimiento-web"]);
+  assert.match(note.body.body, /Dirección: 5030 Broadway/);
+  const opportunity = ghl.calls.find((c) => c.path === "/opportunities/");
+  assert.equal(opportunity.body.source, "Sorteo / Rifa");
+  assert.ok(!ghl.calls.some((c) => c.path.startsWith("/conversations")));
+}
+
 // Un error de GHL se propaga para que /api/leads lo registre.
 {
   const ghl = fakeGhl({ failOn: "/contacts/upsert" });
@@ -133,5 +163,5 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
 }
 
 console.log(
-  "ok   entrega a GHL (sin token, lead nuevo, oportunidad existente, cliente, conversación, HTML, mensaje fallido, error)",
+  "ok   entrega a GHL (sin token, lead nuevo, oportunidad existente, cliente, conversación, HTML, mensaje fallido, sorteo, error)",
 );

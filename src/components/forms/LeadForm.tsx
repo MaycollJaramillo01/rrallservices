@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { contactReasons, contactSchema, leadSchema } from "@/lib/lead-schema";
+import { contactReasons, contactSchema, leadSchema, sorteoSchema } from "@/lib/lead-schema";
 import type { LeadSchemaType } from "@/lib/lead-schema";
 import { Button } from "@/components/ui/Button";
 import { products } from "@/data/products";
@@ -12,8 +12,9 @@ import { siteConfig } from "@/config/site";
 
 interface LeadFormProps {
   fuente: string;
-  // "contacto" pide motivo y mensaje; "demostracion" solo los datos básicos.
-  variant?: "demostracion" | "contacto";
+  // "contacto" pide motivo y mensaje; "demostracion" solo los datos básicos;
+  // "sorteo" cambia email, producto y mensaje por la dirección.
+  variant?: "demostracion" | "contacto" | "sorteo";
   defaultProduct?: string;
   submitLabel?: string;
   successTitle?: string;
@@ -35,8 +36,11 @@ export function LeadForm({
   successBody = "Una especialista se comunicará con usted a la brevedad.",
 }: LeadFormProps) {
   const isContact = variant === "contacto";
+  const isSorteo = variant === "sorteo";
   const [isPending, startTransition] = useTransition();
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
+  // Primer nombre de quien envió; successTitle puede usarlo como {nombre}.
+  const [sentName, setSentName] = useState("");
 
   const {
     register,
@@ -44,7 +48,10 @@ export function LeadForm({
     formState: { errors },
     reset,
   } = useForm<LeadSchemaType>({
-    resolver: zodResolver(isContact ? contactSchema : leadSchema),
+    // El sorteo no pide email: su esquema lo deja opcional, de ahí el cast.
+    resolver: zodResolver(
+      isContact ? contactSchema : isSorteo ? sorteoSchema : leadSchema,
+    ) as Resolver<LeadSchemaType>,
     mode: "onBlur",
     defaultValues: { productoInteres: defaultProduct ?? "", consentimientoSms: false },
   });
@@ -59,6 +66,7 @@ export function LeadForm({
           body: JSON.stringify({ ...data, fuente }),
         });
         if (!response.ok) throw new Error(String(response.status));
+        setSentName(data.nombre.split(" ")[0]);
         setSubmitState("success");
         reset();
       } catch {
@@ -83,8 +91,14 @@ export function LeadForm({
 
   if (submitState === "success") {
     return (
-      <div className="py-8 text-center" role="status">
-        <h3 className="mb-3 font-display text-2xl">{successTitle}</h3>
+      // El foco lleva la vista a la confirmación: el formulario se encoge al enviarse.
+      <div
+        className="py-8 text-center outline-none"
+        role="status"
+        tabIndex={-1}
+        ref={(el) => el?.focus()}
+      >
+        <h3 className="mb-3 font-display text-2xl">{successTitle.replace("{nombre}", sentName)}</h3>
         <p className="text-sm text-[var(--color-steel)]">{successBody}</p>
         <Button
           variant="ghost"
@@ -94,7 +108,7 @@ export function LeadForm({
             reset();
           }}
         >
-          Enviar otra solicitud
+          {isSorteo ? "Inscribir a otra persona" : "Enviar otra solicitud"}
         </Button>
       </div>
     );
@@ -105,7 +119,7 @@ export function LeadForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass} htmlFor={id("nombre")}>
-            Nombre
+            {isSorteo ? "Nombres" : "Nombre"}
           </label>
           <input
             id={id("nombre")}
@@ -119,7 +133,7 @@ export function LeadForm({
         </div>
         <div>
           <label className={labelClass} htmlFor={id("apellido")}>
-            Apellido
+            {isSorteo ? "Apellidos" : "Apellido"}
           </label>
           <input
             id={id("apellido")}
@@ -132,24 +146,43 @@ export function LeadForm({
           {fieldError("apellido")}
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {isSorteo && (
         <div>
-          <label className={labelClass} htmlFor={id("email")}>
-            Email
+          <label className={labelClass} htmlFor={id("direccion")}>
+            Dirección
           </label>
           <input
-            id={id("email")}
-            type="email"
-            autoComplete="email"
-            {...register("email")}
-            {...a11y("email")}
+            id={id("direccion")}
+            type="text"
+            autoComplete="street-address"
+            placeholder="Calle, apto., ciudad y ZIP"
+            {...register("direccion")}
+            {...a11y("direccion")}
             className={inputClass}
           />
-          {fieldError("email")}
+          {fieldError("direccion")}
         </div>
+      )}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {!isSorteo && (
+          <div>
+            <label className={labelClass} htmlFor={id("email")}>
+              Email
+            </label>
+            <input
+              id={id("email")}
+              type="email"
+              autoComplete="email"
+              {...register("email")}
+              {...a11y("email")}
+              className={inputClass}
+            />
+            {fieldError("email")}
+          </div>
+        )}
         <div>
           <label className={labelClass} htmlFor={id("telefono")}>
-            Teléfono
+            {isSorteo ? "Número de teléfono" : "Teléfono"}
           </label>
           <input
             id={id("telefono")}
@@ -184,34 +217,38 @@ export function LeadForm({
           {fieldError("motivo")}
         </div>
       )}
-      <div>
-        <label className={labelClass} htmlFor={id("producto")}>
-          Producto de interés{isContact ? " (opcional)" : ""}
-        </label>
-        <select id={id("producto")} {...register("productoInteres")} className={inputClass}>
-          <option value="">Seleccione un producto</option>
-          {products.map((product) => (
-            <option key={product.slug} value={product.slug}>
-              {product.name}
-            </option>
-          ))}
-          <option value="otros">Otro</option>
-        </select>
-      </div>
-      <div>
-        <label className={labelClass} htmlFor={id("mensaje")}>
-          {isContact ? "Mensaje" : "Mensaje (opcional)"}
-        </label>
-        <textarea
-          id={id("mensaje")}
-          rows={isContact ? 5 : 4}
-          maxLength={2000}
-          {...register("mensaje")}
-          {...a11y("mensaje")}
-          className={`${inputClass} resize-none`}
-        />
-        {fieldError("mensaje")}
-      </div>
+      {!isSorteo && (
+        <>
+          <div>
+            <label className={labelClass} htmlFor={id("producto")}>
+              Producto de interés{isContact ? " (opcional)" : ""}
+            </label>
+            <select id={id("producto")} {...register("productoInteres")} className={inputClass}>
+              <option value="">Seleccione un producto</option>
+              {products.map((product) => (
+                <option key={product.slug} value={product.slug}>
+                  {product.name}
+                </option>
+              ))}
+              <option value="otros">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelClass} htmlFor={id("mensaje")}>
+              {isContact ? "Mensaje" : "Mensaje (opcional)"}
+            </label>
+            <textarea
+              id={id("mensaje")}
+              rows={isContact ? 5 : 4}
+              maxLength={2000}
+              {...register("mensaje")}
+              {...a11y("mensaje")}
+              className={`${inputClass} resize-none`}
+            />
+            {fieldError("mensaje")}
+          </div>
+        </>
+      )}
       <div className="space-y-4 border-t border-[var(--color-steel)]/30 pt-6">
         <div>
           <label className="flex cursor-pointer items-start gap-3">
@@ -222,8 +259,20 @@ export function LeadForm({
               className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-ink)]"
             />
             <span className="text-sm text-[var(--color-graphite)]">
-              Acepto que mi información sea utilizada para contactarme y coordinar la atención
-              solicitada, según la{" "}
+              {isSorteo ? (
+                <>
+                  Acepto las{" "}
+                  <a href="#bases" className="text-[var(--color-deep-royal-blue)] underline">
+                    bases del sorteo
+                  </a>{" "}
+                  y que mi información sea utilizada para contactarme, según la{" "}
+                </>
+              ) : (
+                <>
+                  Acepto que mi información sea utilizada para contactarme y coordinar la atención
+                  solicitada, según la{" "}
+                </>
+              )}
               <Link href="/privacidad" className="text-[var(--color-deep-royal-blue)] underline">
                 política de privacidad
               </Link>
