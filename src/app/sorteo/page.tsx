@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { LeadForm } from "@/components/forms/LeadForm";
@@ -9,10 +10,10 @@ import { createMetadata } from "@/config/seo";
 
 // Datos que el manual de comunicación de Royal Prestige (1.3.3, concursos y
 // premios) exige publicar: organizador, requisitos, premio, cantidad y fechas.
-// FALTA: confirmar las fechas con la distribuidora antes de publicar.
 const sorteo = {
   premio: "Plancha Royal Prestige® Innove",
   cantidad: "Una (1)",
+  periodoParticipacion: "Del 1 al 31 de octubre",
   fechaSorteo: "Por confirmar",
   fechaEntrega: "Por confirmar",
 };
@@ -41,8 +42,9 @@ const bases = [
   ],
   [
     "Cómo participar",
-    "Completar el boleto de esta página con nombres, apellidos, dirección y número de teléfono. Una participación por persona.",
+    `Completar el boleto de esta página con nombres, apellidos, dirección y número de teléfono entre el 1 y el 31 de octubre. Una participación por persona.`,
   ],
+  ["Periodo de participación", `${sorteo.periodoParticipacion}.`],
   [
     "Sin compra",
     "No es necesario comprar ni asistir a una demostración para participar ni para ganar.",
@@ -111,7 +113,7 @@ export default function SorteoPage() {
           <div className="lg:col-span-6">
             <p className="inline-flex items-center gap-3 border border-[var(--gold)]/40 px-4 py-2 text-[11px] tracking-[0.25em] text-[var(--gold)] uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)] motion-safe:animate-pulse" />
-              Sorteo abierto · New York
+              Sorteo abierto · Del 1 al 31 de octubre
             </p>
             <h1 className="mt-8 font-display text-[clamp(3.25rem,7.5vw,6.5rem)] leading-[0.92] tracking-tight text-[var(--color-pure-white)]">
               Esta plancha
@@ -129,6 +131,19 @@ export default function SorteoPage() {
                 </li>
               ))}
             </ul>
+            <figure className="mt-9 overflow-hidden border border-white/15 bg-white/5 shadow-2xl shadow-black/25">
+              <Image
+                src="/assets/sorteo/plancha-innove-octubre.png"
+                alt="Plancha Royal Prestige Innove que se sorteará"
+                width={1600}
+                height={900}
+                priority
+                className="h-auto w-full"
+              />
+              <figcaption className="border-t border-white/10 px-4 py-3 text-xs tracking-[0.12em] text-white/70 uppercase">
+                Premio del sorteo · Participaciones hasta el 31 de octubre
+              </figcaption>
+            </figure>
           </div>
 
           <div
