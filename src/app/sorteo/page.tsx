@@ -25,8 +25,8 @@ export const metadata: Metadata = createMetadata({
 });
 
 const steps = [
-  ["Llene el boleto", "Nombres, apellidos, dirección y teléfono. Toma menos de un minuto."],
-  ["Ya está participando", "No tiene que comprar nada ni asistir a una demostración."],
+  ["Complete el formulario", "Nombres, apellidos, dirección y teléfono. Toma menos de un minuto."],
+  ["Su participación queda registrada", "No tiene que comprar nada ni asistir a una demostración."],
   ["Si gana, le llamamos", "Al número que registró, para coordinar la entrega de su plancha."],
 ];
 
@@ -42,7 +42,7 @@ const bases = [
   ],
   [
     "Cómo participar",
-    `Completar el boleto de esta página con nombres, apellidos, dirección y número de teléfono entre el 1 y el 31 de octubre. Una participación por persona.`,
+    `Completar el formulario de esta página con nombres, apellidos, dirección y número de teléfono entre el 1 y el 31 de octubre. Una participación por persona.`,
   ],
   ["Periodo de participación", `${sorteo.periodoParticipacion}.`],
   [
@@ -63,7 +63,7 @@ const bases = [
   ],
 ] as const;
 
-// Muescas del boleto a la altura de la línea perforada (el talón mide 96px).
+// Muescas del formulario a la altura de la línea perforada (el talón mide 96px).
 // Con máscara quedan transparentes sobre cualquier fondo; la sombra va en el
 // padre con drop-shadow porque la máscara recortaría un box-shadow.
 const notch = (side: "left" | "right") =>
@@ -115,23 +115,7 @@ export default function SorteoPage() {
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--gold)] motion-safe:animate-pulse" />
               Sorteo abierto · Del 1 al 31 de octubre
             </p>
-            <h1 className="mt-8 font-display text-[clamp(3.25rem,7.5vw,6.5rem)] leading-[0.92] tracking-tight text-[var(--color-pure-white)]">
-              Esta plancha
-              <br />
-              <em className="text-[var(--gold)]">puede ser suya.</em>
-            </h1>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-white/80">
-              Regalamos una {sorteo.premio}. Llene su boleto y ya está participando.
-            </p>
-            <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-3 text-sm text-white/75">
-              {["Sin compra", "Sin compromiso", "Menos de un minuto"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <Check />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <figure className="mt-9 overflow-hidden border border-white/15 bg-white/5 shadow-2xl shadow-black/25">
+            <figure className="relative mt-6 overflow-hidden border border-white/15 bg-white/5 shadow-2xl shadow-black/25">
               <Image
                 src="/assets/sorteo/plancha-innove-octubre.png"
                 alt="Plancha Royal Prestige Innove que se sorteará"
@@ -140,10 +124,26 @@ export default function SorteoPage() {
                 priority
                 className="h-auto w-full"
               />
-              <figcaption className="border-t border-white/10 px-4 py-3 text-xs tracking-[0.12em] text-white/70 uppercase">
-                Premio del sorteo · Participaciones hasta el 31 de octubre
-              </figcaption>
+              <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(transparent,rgba(11,24,48,0.96))] px-5 pt-20 pb-5 sm:px-8 sm:pt-32 sm:pb-7">
+                <h1 className="font-display text-[clamp(2.8rem,6vw,5.5rem)] leading-[0.88] tracking-tight text-balance text-[var(--color-pure-white)]">
+                  Sorteo Plancha <em className="text-[var(--gold)]">Innove.</em>
+                </h1>
+                <p className="mt-3 text-[11px] tracking-[0.18em] text-white/75 uppercase">
+                  Premio del sorteo · Participaciones hasta el 31 de octubre
+                </p>
+              </div>
             </figure>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80">
+              Estamos sorteando una {sorteo.premio}. Complete el formulario para participar.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm text-white/75">
+              {["Sin compra", "Sin compromiso", "Menos de un minuto"].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <Check />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div
@@ -154,15 +154,16 @@ export default function SorteoPage() {
               <div className="flex h-24 items-center justify-between gap-4 px-6 sm:px-8">
                 <div>
                   <p className="text-[10px] tracking-[0.25em] text-[var(--color-steel)] uppercase">
-                    Boleto de participación
+                    Formulario de participación
                   </p>
                   <p className="mt-1 font-display text-2xl leading-none text-[var(--color-deep-royal-blue)]">
                     Plancha Innove
                   </p>
                 </div>
                 <p className="text-right text-[10px] leading-relaxed tracking-[0.2em] text-[var(--color-steel)] uppercase group-has-[[role=status]]:invisible">
-                  Admite
-                  <br />1 persona
+                  Una
+                  <br />
+                  participación
                 </p>
               </div>
               <div className="mx-6 border-t-2 border-dashed border-[var(--color-steel)]/25" />
@@ -170,7 +171,7 @@ export default function SorteoPage() {
                 <LeadForm
                   fuente={SORTEO_FUENTE}
                   variant="sorteo"
-                  submitLabel="Quiero participar"
+                  submitLabel="Participar en el sorteo"
                   successTitle="¡Listo, {nombre}! Ya está participando."
                   successBody="Si resulta ganador, le llamaremos al número que registró."
                 />
@@ -299,7 +300,7 @@ export default function SorteoPage() {
               href="#participar"
               className="inline-flex items-center border border-white/40 px-7 py-4 text-sm font-medium text-[var(--color-pure-white)] transition-colors hover:border-white"
             >
-              Llenar mi boleto
+              Completar formulario
             </a>
           </div>
         </Container>
