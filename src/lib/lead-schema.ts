@@ -40,3 +40,34 @@ export const sorteoSchema = leadSchema.extend({
 
 export type LeadSchemaType = z.infer<typeof leadSchema>;
 export type SorteoSchemaType = z.infer<typeof sorteoSchema>;
+
+export const OPORTUNIDAD_FUENTE = "oportunidad-royal";
+export const OPORTUNIDAD_ORIGEN = "website-oportunidad-royal";
+
+// Una consulta de negocio no puede convertirse en una demostración por sus datos.
+export const opportunitySchema = leadSchema.extend({
+  motivo: z.literal("oportunidad").default("oportunidad"),
+  productoInteres: z.literal("").optional(),
+  direccion: z.literal("").optional(),
+  telefono: z
+    .string()
+    .trim()
+    .max(30)
+    .refine(
+      (value) => /^[+\d\s().-]+$/.test(value) && /^\d{7,15}$/.test(value.replace(/\D/g, "")),
+      "Escriba un teléfono válido, con código de país si corresponde",
+    ),
+  attribution: z
+    .object({
+      page: z.enum(["/trabaja-con-nosotros", "/oportunidad-royal"]),
+      source: z.string().max(120).optional(),
+      medium: z.string().max(120).optional(),
+      campaign: z.string().max(120).optional(),
+      referrer: z.string().max(500).optional(),
+      landingPage: z.string().max(500).optional(),
+      timestamp: z.iso.datetime().optional(),
+    })
+    .optional(),
+});
+
+export type OpportunitySchemaType = z.infer<typeof opportunitySchema>;

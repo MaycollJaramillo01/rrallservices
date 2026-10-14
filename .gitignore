@@ -13,3 +13,6 @@ dist
 .eslintcache
 *.tgz
 **/*.map
+
+# Capturas temporales y receptor simulado de las pruebas de Oportunidad Royal.
+tmp/oportunidad-royal/

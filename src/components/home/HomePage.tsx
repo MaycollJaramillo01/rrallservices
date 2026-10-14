@@ -10,6 +10,7 @@ import { KitchenSystemsPreview } from "./KitchenSystemsPreview";
 import { RRAllServicesStory } from "./RRAllServicesStory";
 import { TrajectoryData } from "./TrajectoryData";
 import { DemoConversionSection } from "./DemoConversionSection";
+import { OpportunityInvitation } from "./OpportunityInvitation";
 
 export function HomePage() {
   return (
@@ -25,6 +26,7 @@ export function HomePage() {
       <KitchenSystemsPreview />
       <RRAllServicesStory />
       <TrajectoryData />
+      <OpportunityInvitation />
       <DemoConversionSection />
     </main>
   );

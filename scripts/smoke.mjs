@@ -14,6 +14,8 @@ const routes = [
   "/demostraciones",
   "/demostraciones?producto=frescapure",
   "/nosotros",
+  "/oportunidad-royal",
+  "/trabaja-con-nosotros",
   "/contacto",
   "/preguntas-frecuentes",
   "/privacidad",

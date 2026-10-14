@@ -15,7 +15,7 @@ export function Header() {
       <div className="mx-auto max-w-[1480px] px-6 sm:px-8 lg:px-[64px] xl:px-[88px]">
         <div className="flex h-16 items-center justify-between lg:h-20">
           <BrandWordmark />
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
             {navigationConfig.main.map((item) => (
               <Link
                 key={item.href}
@@ -29,7 +29,7 @@ export function Header() {
           <div className="flex items-center gap-4">
             <a
               href={`tel:${siteConfig.phone.replace(/[^0-9+]/g, "")}`}
-              className="hidden text-sm text-[var(--color-graphite)] transition-colors hover:text-[var(--color-ink)] sm:inline"
+              className="hidden text-sm text-[var(--color-graphite)] transition-colors hover:text-[var(--color-ink)] sm:inline xl:hidden 2xl:inline"
             >
               {siteConfig.phone}
             </a>
@@ -41,7 +41,7 @@ export function Header() {
             </Link>
             <button
               onClick={() => setMenuOpen(true)}
-              className="p-2 text-[var(--color-graphite)] lg:hidden"
+              className="p-2 text-[var(--color-graphite)] xl:hidden"
               aria-label="Menú"
               aria-expanded={menuOpen}
             >

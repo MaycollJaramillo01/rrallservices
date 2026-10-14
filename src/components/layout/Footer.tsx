@@ -5,6 +5,7 @@ import { categories } from "@/data/categories";
 
 const infoLinks = [
   { href: "/nosotros", label: "Nuestra historia" },
+  { href: "/trabaja-con-nosotros", label: "Trabaja con nosotros" },
   { href: "/demostraciones", label: "Demostraciones" },
   { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
   { href: "/contacto", label: "Contacto" },

@@ -4,8 +4,14 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { contactReasons, contactSchema, leadSchema, sorteoSchema } from "@/lib/lead-schema";
-import type { LeadSchemaType } from "@/lib/lead-schema";
+import {
+  contactReasons,
+  contactSchema,
+  leadSchema,
+  sorteoSchema,
+  opportunitySchema,
+} from "@/lib/lead-schema";
+import type { LeadSchemaType, OpportunitySchemaType } from "@/lib/lead-schema";
 import { Button } from "@/components/ui/Button";
 import { products } from "@/data/products";
 import { siteConfig } from "@/config/site";
@@ -14,7 +20,7 @@ interface LeadFormProps {
   fuente: string;
   // "contacto" pide motivo y mensaje; "demostracion" solo los datos básicos;
   // "sorteo" cambia email, producto y mensaje por la dirección.
-  variant?: "demostracion" | "contacto" | "sorteo";
+  variant?: "demostracion" | "contacto" | "sorteo" | "oportunidad";
   defaultProduct?: string;
   submitLabel?: string;
   successTitle?: string;
@@ -37,6 +43,7 @@ export function LeadForm({
 }: LeadFormProps) {
   const isContact = variant === "contacto";
   const isSorteo = variant === "sorteo";
+  const isOpportunity = variant === "oportunidad";
   const [isPending, startTransition] = useTransition();
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
   // Primer nombre de quien envió; successTitle puede usarlo como {nombre}.
@@ -47,23 +54,45 @@ export function LeadForm({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<LeadSchemaType>({
+  } = useForm<LeadSchemaType | OpportunitySchemaType>({
     // El sorteo no pide email: su esquema lo deja opcional, de ahí el cast.
     resolver: zodResolver(
-      isContact ? contactSchema : isSorteo ? sorteoSchema : leadSchema,
-    ) as Resolver<LeadSchemaType>,
+      isOpportunity
+        ? opportunitySchema
+        : isContact
+          ? contactSchema
+          : isSorteo
+            ? sorteoSchema
+            : leadSchema,
+    ) as Resolver<LeadSchemaType | OpportunitySchemaType>,
     mode: "onBlur",
     defaultValues: { productoInteres: defaultProduct ?? "", consentimientoSms: false },
   });
 
-  const onSubmit = (data: LeadSchemaType) => {
+  const onSubmit = (data: LeadSchemaType | OpportunitySchemaType) => {
     setSubmitState("idle");
     startTransition(async () => {
       try {
+        const params = new URLSearchParams(window.location.search);
         const response = await fetch("/api/leads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, fuente }),
+          body: JSON.stringify({
+            ...data,
+            fuente,
+            ...(isOpportunity
+              ? {
+                  attribution: {
+                    page: window.location.pathname,
+                    source: params.get("utm_source")?.slice(0, 120) || undefined,
+                    medium: params.get("utm_medium")?.slice(0, 120) || undefined,
+                    campaign: params.get("utm_campaign")?.slice(0, 120) || undefined,
+                    referrer: document.referrer.slice(0, 500) || undefined,
+                    landingPage: window.location.href.slice(0, 500),
+                  },
+                }
+              : {}),
+          }),
         });
         if (!response.ok) throw new Error(String(response.status));
         setSentName(data.nombre.split(" ")[0]);
@@ -115,7 +144,12 @@ export function LeadForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" aria-busy={isPending} noValidate>
+      {isOpportunity && (
+        <p className="text-sm text-[var(--color-steel)]">
+          Nombre, apellido, correo, teléfono y aceptación de privacidad son obligatorios.
+        </p>
+      )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass} htmlFor={id("nombre")}>
@@ -125,6 +159,8 @@ export function LeadForm({
             id={id("nombre")}
             type="text"
             autoComplete="given-name"
+            required={isOpportunity}
+            maxLength={100}
             {...register("nombre")}
             {...a11y("nombre")}
             className={inputClass}
@@ -139,6 +175,8 @@ export function LeadForm({
             id={id("apellido")}
             type="text"
             autoComplete="family-name"
+            required={isOpportunity}
+            maxLength={100}
             {...register("apellido")}
             {...a11y("apellido")}
             className={inputClass}
@@ -167,12 +205,13 @@ export function LeadForm({
         {!isSorteo && (
           <div>
             <label className={labelClass} htmlFor={id("email")}>
-              Email
+              {isOpportunity ? "Correo electrónico" : "Email"}
             </label>
             <input
               id={id("email")}
               type="email"
               autoComplete="email"
+              required={isOpportunity}
               {...register("email")}
               {...a11y("email")}
               className={inputClass}
@@ -188,6 +227,9 @@ export function LeadForm({
             id={id("telefono")}
             type="tel"
             autoComplete="tel"
+            required={isOpportunity}
+            inputMode="tel"
+            maxLength={isOpportunity ? 30 : 20}
             {...register("telefono")}
             {...a11y("telefono")}
             className={inputClass}
@@ -219,20 +261,22 @@ export function LeadForm({
       )}
       {!isSorteo && (
         <>
-          <div>
-            <label className={labelClass} htmlFor={id("producto")}>
-              Producto de interés{isContact ? " (opcional)" : ""}
-            </label>
-            <select id={id("producto")} {...register("productoInteres")} className={inputClass}>
-              <option value="">Seleccione un producto</option>
-              {products.map((product) => (
-                <option key={product.slug} value={product.slug}>
-                  {product.name}
-                </option>
-              ))}
-              <option value="otros">Otro</option>
-            </select>
-          </div>
+          {!isOpportunity && (
+            <div>
+              <label className={labelClass} htmlFor={id("producto")}>
+                Producto de interés{isContact ? " (opcional)" : ""}
+              </label>
+              <select id={id("producto")} {...register("productoInteres")} className={inputClass}>
+                <option value="">Seleccione un producto</option>
+                {products.map((product) => (
+                  <option key={product.slug} value={product.slug}>
+                    {product.name}
+                  </option>
+                ))}
+                <option value="otros">Otro</option>
+              </select>
+            </div>
+          )}
           <div>
             <label className={labelClass} htmlFor={id("mensaje")}>
               {isContact ? "Mensaje" : "Mensaje (opcional)"}
@@ -254,6 +298,7 @@ export function LeadForm({
           <label className="flex cursor-pointer items-start gap-3">
             <input
               type="checkbox"
+              required={isOpportunity}
               {...register("consentimiento")}
               {...a11y("consentimiento")}
               className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-ink)]"
@@ -269,8 +314,9 @@ export function LeadForm({
                 </>
               ) : (
                 <>
-                  Acepto que mi información sea utilizada para contactarme y coordinar la atención
-                  solicitada, según la{" "}
+                  {isOpportunity
+                    ? "Acepto que RR All Services utilice mis datos para responder mi consulta sobre Oportunidad Royal, según la "
+                    : "Acepto que mi información sea utilizada para contactarme y coordinar la atención solicitada, según la "}
                 </>
               )}
               <Link href="/privacidad" className="text-[var(--color-deep-royal-blue)] underline">
@@ -288,9 +334,12 @@ export function LeadForm({
             className="mt-1 h-4 w-4 shrink-0 accent-[var(--color-ink)]"
           />
           <span className="text-sm text-[var(--color-graphite)]">
-            Acepto recibir mensajes de texto de {siteConfig.name} sobre mi solicitud, confirmaciones
-            y recordatorios de cita. La frecuencia puede variar y pueden aplicarse tarifas. Responda
-            STOP para cancelar. (Opcional)
+            Acepto recibir mensajes de texto de {siteConfig.name}{" "}
+            {isOpportunity
+              ? "sobre mi consulta de Oportunidad Royal"
+              : "sobre mi solicitud, confirmaciones y recordatorios de cita"}
+            . La frecuencia puede variar y pueden aplicarse tarifas. Responda STOP para cancelar.
+            (Opcional)
           </span>
         </label>
       </div>
@@ -299,7 +348,7 @@ export function LeadForm({
         variant="primary"
         size="lg"
         disabled={isPending}
-        className="w-full sm:w-auto"
+        className="w-full disabled:cursor-wait disabled:opacity-60 sm:w-auto"
       >
         {isPending ? "Enviando..." : submitLabel}
       </Button>

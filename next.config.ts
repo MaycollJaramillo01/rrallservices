@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
   },
   poweredByHeader: false,
   compress: true,
+  redirects() {
+    return [
+      { source: "/oportunidad-royal", destination: "/trabaja-con-nosotros", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

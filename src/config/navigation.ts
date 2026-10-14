@@ -4,6 +4,7 @@ export const navigationConfig = {
     { label: "Agua", href: "/productos?cat=agua" },
     { label: "Cocina", href: "/productos?cat=cocina" },
     { label: "Nuestra historia", href: "/nosotros" },
+    { label: "Trabaja con nosotros", href: "/trabaja-con-nosotros" },
     { label: "Demostraciones", href: "/demostraciones" },
   ],
   cta: {

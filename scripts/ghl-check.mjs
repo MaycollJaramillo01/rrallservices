@@ -3,6 +3,7 @@
 // ponytail: sin framework de test; si cambia la lógica de src/lib/ghl.ts, esto debe fallar.
 import assert from "node:assert/strict";
 import { sendLeadToGhl } from "../src/lib/ghl.ts";
+import { opportunitySchema } from "../src/lib/lead-schema.ts";
 
 const lead = {
   nombre: "Ana",
@@ -164,4 +165,76 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
 
 console.log(
   "ok   entrega a GHL (sin token, lead nuevo, oportunidad existente, cliente, conversación, HTML, mensaje fallido, sorteo, error)",
+);
+
+// Oportunidad: atribución fija, interés explícito y ninguna llamada al embudo,
+// calendario o mensajería saliente, incluso al pedir SMS o llegar con UTM de sorteo.
+for (const consentimientoSms of [false, true]) {
+  const ghl = fakeGhl();
+  const opportunity = {
+    ...lead,
+    fuente: "oportunidad-royal",
+    motivo: "oportunidad",
+    productoInteres: "",
+    mensaje: "",
+    consentimientoSms,
+    attribution: {
+      page: "/trabaja-con-nosotros",
+      source: "instagram",
+      campaign: "sorteo_olla",
+      timestamp: "2026-10-13T12:00:00.000Z",
+    },
+  };
+  assert.equal(opportunitySchema.safeParse(opportunity).success, true);
+  assert.equal(await sendLeadToGhl(opportunity, ghl.fetch), "sent");
+  const [upsert, tags, note] = ghl.calls;
+  assert.equal(upsert.body.source, "website-oportunidad-royal");
+  assert.ok(!upsert.body.customFields.some((field) => field.id === "6mml1ucgTmCKg8YC6SUB"));
+  assert.deepEqual(tags.body.tags, [
+    "website-oportunidad-royal",
+    "interes-oportunidad-royal",
+    ...(consentimientoSms ? ["sms-consentimiento-oportunidad-royal"] : []),
+  ]);
+  assert.match(note.body.body, /Interés: oportunidad de negocio/);
+  assert.match(note.body.body, /Acepta privacidad: sí/);
+  assert.match(note.body.body, /source: instagram/);
+  assert.match(note.body.body, /campaign: sorteo_olla/);
+  assert.match(note.body.body, /timestamp: 2026-10-13/);
+  assert.match(note.body.body, /page: \/trabaja-con-nosotros/);
+  assert.ok(
+    !ghl.calls.some((call) =>
+      /opportunities|calendars|appointments|messages\/[^i]/.test(call.path),
+    ),
+  );
+  assert.equal(ghl.calls.at(-1).path, "/conversations/messages/inbound");
+  assert.equal(ghl.calls.at(-1).body.subject, "Solicitud desde el sitio web (oportunidad-royal)");
+  for (const override of [
+    { telefono: "abcdefghi" },
+    { telefono: "123" },
+    { email: "incorrecto" },
+    { consentimiento: false },
+    { motivo: "demostracion" },
+    { productoInteres: "frescaflow" },
+    { nombre: " " },
+    { apellido: " " },
+  ]) {
+    assert.equal(
+      opportunitySchema.safeParse({ ...opportunity, ...override }).success,
+      false,
+      JSON.stringify(override),
+    );
+  }
+}
+for (const failOn of ["/contacts/upsert", "/contacts/c1/tags", "/contacts/c1/notes"]) {
+  const ghl = fakeGhl({ failOn });
+  await assert.rejects(
+    sendLeadToGhl(
+      { ...lead, fuente: "oportunidad-royal", motivo: "oportunidad", productoInteres: "" },
+      ghl.fetch,
+    ),
+  );
+  assert.ok(!ghl.calls.some((call) => call.path.startsWith("/opportunities")));
+}
+console.log(
+  "ok   Oportunidad Royal (privacidad, SMS separado, UTM, validación, errores y separación de ventas)",
 );

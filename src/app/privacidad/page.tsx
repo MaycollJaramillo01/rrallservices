@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Cómo RR All Services recopila, utiliza y protege sus datos personales.",
 };
 
-const updated = "9 de septiembre de 2026";
+const updated = "13 de octubre de 2026";
 
 export default function PrivacidadPage() {
   return (
@@ -47,7 +47,9 @@ export default function PrivacidadPage() {
               <Text as="p">
                 Únicamente los datos que usted nos entrega voluntariamente en nuestros formularios:
                 nombre, apellido, correo electrónico, teléfono, el producto que le interesa y el
-                mensaje que decida escribirnos.
+                mensaje que decida escribirnos. Para Oportunidad Royal registramos también el
+                interés en la oportunidad de negocio, la página y el origen de la consulta, y la
+                fecha de envío y sus elecciones de consentimiento.
               </Text>
               <Text as="p" className="mt-3">
                 No solicitamos ni almacenamos datos de tarjetas, cuentas bancarias ni documentos de
@@ -60,6 +62,10 @@ export default function PrivacidadPage() {
               <ul className="list-disc space-y-2 pl-5 text-[var(--color-graphite)]">
                 <li>Contactarle y coordinar una demostración de los sistemas Royal Prestige®.</li>
                 <li>Responder sus consultas y dar seguimiento como cliente potencial.</li>
+                <li>
+                  Responder sus consultas sobre Oportunidad Royal y coordinar una conversación con
+                  el equipo.
+                </li>
                 <li>Mantener el registro de la atención brindada.</li>
               </ul>
               <Text as="p" className="mt-3">

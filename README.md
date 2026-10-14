@@ -2,6 +2,8 @@
 
 Sitio de RR All Services, Distribuidor Autorizado Independiente de Royal Prestige® en New York.
 Es un catálogo informativo: no vende en línea, su conversión es la **solicitud de demostración**.
+La sección «Trabaja con nosotros» en `/trabaja-con-nosotros` permite solicitar información sobre la actividad comercial
+independiente y mantiene estas consultas separadas de las demostraciones.
 
 Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · TypeScript.
 
@@ -15,32 +17,32 @@ npm run dev
 
 ## Scripts
 
-| Comando            | Qué hace                                                       |
-| ------------------ | -------------------------------------------------------------- |
-| `npm run dev`      | Servidor de desarrollo en http://localhost:3000                 |
-| `npm run build`    | Build de producción (salida `standalone`)                       |
-| `npm start`        | Sirve el build de producción                                    |
-| `npm run typecheck`| TypeScript sin emitir                                           |
-| `npm run lint`     | ESLint                                                          |
-| `npm run format`   | Prettier                                                        |
-| `npm run smoke`    | Verifica rutas y captación de leads contra el servidor en marcha|
-| `npm run check:ghl`| Verifica la entrega a GHL con un `fetch` simulado (no toca la cuenta)|
+| Comando             | Qué hace                                                              |
+| ------------------- | --------------------------------------------------------------------- |
+| `npm run dev`       | Servidor de desarrollo en http://localhost:3000                       |
+| `npm run build`     | Build de producción (salida `standalone`)                             |
+| `npm start`         | Sirve el build de producción                                          |
+| `npm run typecheck` | TypeScript sin emitir                                                 |
+| `npm run lint`      | ESLint                                                                |
+| `npm run format`    | Prettier                                                              |
+| `npm run smoke`     | Verifica rutas y captación de leads contra el servidor en marcha      |
+| `npm run check:ghl` | Verifica la entrega a GHL con un `fetch` simulado (no toca la cuenta) |
 
 ## Variables de entorno
 
 Los datos de contacto se muestran en el sitio y salen de aquí, así que basta con cambiarlos en el
 entorno para actualizarlos en todas las páginas.
 
-| Variable               | Para qué sirve                                                |
-| ---------------------- | ------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | URL canónica (metadatos, sitemap, robots)                     |
-| `NEXT_PUBLIC_PHONE`    | Teléfono publicado y enlaces `tel:`                           |
-| `NEXT_PUBLIC_EMAIL`    | Email publicado y enlaces `mailto:`                           |
-| `NEXT_PUBLIC_ADDRESS`  | Dirección publicada                                            |
-| `GHL_PRIVATE_INTEGRATION` | Token privado de GHL (solo servidor). Crea contacto, nota y oportunidad de `/contacto` y la home. |
-| `RESEND_API_KEY`       | Envío del lead por correo. **Sin esta ni la de GHL, el lead solo se registra en los logs del servidor.** |
-| `LEAD_FROM_EMAIL`      | Remitente del aviso de lead (dominio verificado en Resend)     |
-| `LEAD_TO_EMAIL`        | Destinatario del aviso (por defecto, `NEXT_PUBLIC_EMAIL`)      |
+| Variable                  | Para qué sirve                                                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`    | URL canónica (metadatos, sitemap, robots)                                                                |
+| `NEXT_PUBLIC_PHONE`       | Teléfono publicado y enlaces `tel:`                                                                      |
+| `NEXT_PUBLIC_EMAIL`       | Email publicado y enlaces `mailto:`                                                                      |
+| `NEXT_PUBLIC_ADDRESS`     | Dirección publicada                                                                                      |
+| `GHL_PRIVATE_INTEGRATION` | Token privado de GHL (solo servidor). Crea contacto, nota y oportunidad de `/contacto` y la home.        |
+| `RESEND_API_KEY`          | Envío del lead por correo. **Sin esta ni la de GHL, el lead solo se registra en los logs del servidor.** |
+| `LEAD_FROM_EMAIL`         | Remitente del aviso de lead (dominio verificado en Resend)                                               |
+| `LEAD_TO_EMAIL`           | Destinatario del aviso (por defecto, `NEXT_PUBLIC_EMAIL`)                                                |
 
 ## Cómo llegan los formularios
 
@@ -73,6 +75,15 @@ dos canales a la vez:
 
 Basta con que un canal reciba el lead para responder OK; si todos los configurados fallan, el
 visitante ve el error con el teléfono.
+
+**Oportunidad Royal:** `LeadForm` con variante `oportunidad` usa la misma API, con validación
+dedicada. GHL guarda la fuente `website-oportunidad-royal`, las etiquetas
+`website-oportunidad-royal` e `interes-oportunidad-royal`, una nota con el interés, la atribución
+y los consentimientos, y el registro entrante en Conversations. No crea citas ni oportunidades
+en el embudo de productos. SMS es opcional y tiene una etiqueta propia. Esta variante exige
+que GHL registre el contacto y su nota; sin token devuelve 503 y no muestra un éxito ficticio.
+No envía avisos por Resend ni comunicaciones automáticas hasta confirmar el seguimiento.
+Contenido, fuentes, evidencias y pendientes: [revisión de Oportunidad Royal](docs/oportunidad-royal/REVISION.md).
 
 El límite de envíos vive en memoria del proceso: con varias instancias, cada una lleva su propia
 cuenta. Suficiente para el volumen actual; si algún día hace falta, se cambia por un contador

@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-13T15:48:50.191Z",
+  "calls": [
+    {
+      "method": "POST",
+      "path": "/contacts/upsert"
+    },
+    {
+      "method": "POST",
+      "path": "/contacts/kA3vgmjbR83u7xASOcRl/tags"
+    },
+    {
+      "method": "POST",
+      "path": "/contacts/kA3vgmjbR83u7xASOcRl/notes"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/search?locationId=BehR3gdBL4V3ftAhMlq7&contactId=kA3vgmjbR83u7xASOcRl"
+    },
+    {
+      "method": "POST",
+      "path": "/conversations/"
+    },
+    {
+      "method": "POST",
+      "path": "/conversations/messages/inbound"
+    }
+  ],
+  "contactId": "kA3vgmjbR83u7xASOcRl",
+  "contact": {
+    "status": 200,
+    "source": "website-oportunidad-royal",
+    "tags": [
+      "website-oportunidad-royal",
+      "interes-oportunidad-royal",
+      "prueba-oportunidad-royal"
+    ],
+    "dnd": true
+  },
+  "notes": {
+    "status": 200,
+    "businessInterestRecorded": true,
+    "privacyRecorded": true,
+    "utmRecorded": true
+  },
+  "appointments": {
+    "status": 200,
+    "count": 0
+  },
+  "opportunities": {
+    "status": 200,
+    "count": 0
+  }
+}

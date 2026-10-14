@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { leadSchema, sorteoSchema, SORTEO_FUENTE } from "@/lib/lead-schema";
+import {
+  leadSchema,
+  sorteoSchema,
+  SORTEO_FUENTE,
+  opportunitySchema,
+  OPORTUNIDAD_FUENTE,
+} from "@/lib/lead-schema";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendLeadToGhl, type GhlLead } from "@/lib/ghl";
 import { siteConfig } from "@/config/site";
 
 const bodySchema = z.union([
+  opportunitySchema.extend({ fuente: z.literal(OPORTUNIDAD_FUENTE) }),
   sorteoSchema.extend({ fuente: z.literal(SORTEO_FUENTE) }),
-  leadSchema.extend({ fuente: z.string().max(60).default("desconocida") }),
+  leadSchema.extend({
+    fuente: z
+      .string()
+      .max(60)
+      .default("desconocida")
+      .refine((value) => value !== OPORTUNIDAD_FUENTE),
+  }),
 ]);
 
 function clientIp(request: Request): string {
@@ -76,7 +89,19 @@ export async function POST(request: Request) {
   // GHL es el CRM (contacto + oportunidad) y el correo avisa a la dueña. Basta
   // con que un canal reciba el lead para no perderlo.
   const lead = parsed.data;
-  const results = await Promise.allSettled([sendLeadToGhl(lead), sendEmail(lead)]);
+  const isOpportunity = lead.fuente === OPORTUNIDAD_FUENTE;
+  if (lead.motivo === "oportunidad") {
+    lead.attribution = {
+      ...lead.attribution,
+      page: lead.attribution?.page ?? "/trabaja-con-nosotros",
+      timestamp: new Date().toISOString(),
+    };
+  }
+  // El seguimiento de reclutamiento todavía no tiene avisos aprobados.
+  const results = await Promise.allSettled([
+    sendLeadToGhl(lead),
+    ...(!isOpportunity ? [sendEmail(lead)] : []),
+  ]);
   const failures = results.filter((r) => r.status === "rejected");
   failures.forEach((failure) => console.error("[lead] entrega fallida", failure.reason));
 
@@ -85,6 +110,13 @@ export async function POST(request: Request) {
   }
   if (failures.length) {
     return NextResponse.json({ error: "No pudimos registrar su solicitud." }, { status: 502 });
+  }
+
+  if (isOpportunity) {
+    return NextResponse.json(
+      { error: "La recepción de consultas aún no está disponible. Inténtelo más tarde." },
+      { status: 503 },
+    );
   }
 
   // ponytail: sin GHL_PRIVATE_INTEGRATION ni RESEND_API_KEY (entorno local) el

@@ -1,4 +1,5 @@
-import type { LeadSchemaType, SorteoSchemaType } from "@/lib/lead-schema";
+import type { LeadSchemaType, SorteoSchemaType, OpportunitySchemaType } from "@/lib/lead-schema";
+import { OPORTUNIDAD_FUENTE, OPORTUNIDAD_ORIGEN } from "./lead-schema.ts";
 
 // Entrega de leads de los formularios propios (/contacto, home y /sorteo) a GoHighLevel.
 // Solo se usa desde /api/leads. El token es GHL_PRIVATE_INTEGRATION, sin prefijo
@@ -30,7 +31,9 @@ const productOptions: Record<string, string> = {
   otros: "Otro",
 };
 
-export type GhlLead = (LeadSchemaType | SorteoSchemaType) & { fuente: string };
+export type GhlLead = (LeadSchemaType | SorteoSchemaType | OpportunitySchemaType) & {
+  fuente: string;
+};
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
@@ -76,7 +79,9 @@ export async function sendLeadToGhl(
     return (await response.json()) as T;
   };
 
-  const producto = lead.productoInteres ? productOptions[lead.productoInteres] : undefined;
+  const isOpportunity = lead.fuente === OPORTUNIDAD_FUENTE || lead.motivo === "oportunidad";
+  const producto =
+    !isOpportunity && lead.productoInteres ? productOptions[lead.productoInteres] : undefined;
   // Opción del campo "Fuente del prospecto"; también es la fuente de la oportunidad.
   const origen = lead.fuente.startsWith("sorteo") ? "Sorteo / Rifa" : "Website";
 
@@ -87,7 +92,7 @@ export async function sendLeadToGhl(
     email: lead.email,
     phone: toE164(lead.telefono),
     address1: lead.direccion,
-    source: origen,
+    source: isOpportunity ? OPORTUNIDAD_ORIGEN : origen,
     customFields: [
       { id: FIELD.fuente, field_value: origen },
       ...(lead.mensaje ? [{ id: FIELD.mensaje, field_value: lead.mensaje }] : []),
@@ -96,18 +101,33 @@ export async function sendLeadToGhl(
   });
 
   // Añadir etiquetas por su endpoint no borra las que el contacto ya tenía.
-  const tags = [`website-${lead.fuente.replace(/^pagina-/, "")}`];
-  if (lead.consentimientoSms) tags.push("sms-consentimiento-web");
+  const tags = isOpportunity
+    ? [OPORTUNIDAD_ORIGEN, "interes-oportunidad-royal"]
+    : [`website-${lead.fuente.replace(/^pagina-/, "")}`];
+  if (lead.consentimientoSms)
+    tags.push(isOpportunity ? "sms-consentimiento-oportunidad-royal" : "sms-consentimiento-web");
   await call("POST", `/contacts/${contact.id}/tags`, { tags });
 
   // La nota conserva cada mensaje; el campo personalizado solo guarda el último.
   const note = [
     `Solicitud desde el sitio web (${lead.fuente})`,
+    isOpportunity && "Interés: oportunidad de negocio Royal Prestige con RR All Services",
+    isOpportunity && `Fuente: ${OPORTUNIDAD_ORIGEN}`,
+    isOpportunity && "Consulta informativa; no implica incorporación ni solicitud de demostración.",
     lead.motivo && `Motivo: ${lead.motivo}`,
     lead.direccion && `Dirección: ${lead.direccion}`,
-    lead.productoInteres && `Producto: ${producto ?? lead.productoInteres}`,
+    !isOpportunity && lead.productoInteres && `Producto: ${producto ?? lead.productoInteres}`,
     lead.mensaje && `Mensaje: ${lead.mensaje}`,
+    isOpportunity && `Acepta privacidad: ${lead.consentimiento ? "sí" : "no"}`,
     `Acepta SMS: ${lead.consentimientoSms ? "sí" : "no"}`,
+    isOpportunity && "Alcance SMS: únicamente la consulta sobre Oportunidad Royal.",
+    isOpportunity &&
+      "Seguimiento: revisión manual por RR All Services; proceso de reclutamiento pendiente de confirmar.",
+    ...(isOpportunity && "attribution" in lead && lead.attribution
+      ? Object.entries(lead.attribution)
+          .filter(([, value]) => value)
+          .map(([key, value]) => `${key}: ${value}`)
+      : []),
   ]
     .filter(Boolean)
     .join("\n");
@@ -116,7 +136,7 @@ export async function sendLeadToGhl(
   // Clientes existentes no entran al embudo de venta. Al resto se le abre una
   // oportunidad en "01 Nuevo Prospecto" solo si no tiene ya una abierta, para
   // no hacer retroceder una que el equipo haya avanzado.
-  if (lead.motivo !== "cliente") {
+  if (!isOpportunity && lead.motivo !== "cliente") {
     const { opportunities } = await call<{ opportunities: unknown[] }>(
       "GET",
       `/opportunities/search?location_id=${LOCATION_ID}&pipeline_id=${PIPELINE_ID}&contact_id=${contact.id}&status=open`,
