@@ -63,8 +63,8 @@ export default function OpportunityPage() {
           <Link href="/" className="text-sm text-[var(--color-deep-royal-blue)] hover:underline">
             Inicio
           </Link>
-          <div className="mt-10 grid items-end gap-10 lg:grid-cols-12 lg:gap-16">
-            <div className="lg:col-span-8">
+          <div className="mt-10 grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-7">
               <p className="mb-5 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
                 RR All Services · New York
               </p>
@@ -83,21 +83,57 @@ export default function OpportunityPage() {
                 Quiero conocer la oportunidad
               </Button>
             </div>
-            <aside className="border-t border-[var(--color-steel)]/30 pt-6 lg:col-span-4">
-              <Image
-                src="/assets/brand/rr-logo.png"
-                alt="RR All Services"
-                width={152}
-                height={182}
-                className="mb-5 h-20 w-auto"
-              />
-              <p className="text-sm leading-relaxed text-[var(--color-graphite)]">
-                Distribuidor Autorizado Independiente de Royal Prestige®.
-              </p>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-steel)]">
-                Un primer contacto para informarse, aclarar sus dudas y decidir con calma.
-              </p>
-            </aside>
+            <div className="lg:col-span-5">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-deep-royal-blue)]">
+                  <Image
+                    src="/assets/opportunity/conversacion.png"
+                    alt="Personas conversando y revisando una propuesta comercial"
+                    fill
+                    preload
+                    sizes="(max-width: 1024px) 45vw, 20vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-deep-royal-blue)]">
+                  <Image
+                    src="/assets/opportunity/negociacion.png"
+                    alt="Personas reunidas para revisar información de negocio"
+                    fill
+                    preload
+                    sizes="(max-width: 1024px) 45vw, 20vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative col-span-2 aspect-[2/1] overflow-hidden bg-[var(--color-pure-white)]">
+                  <Image
+                    src="/assets/products/cocina-bateria-main.jpg"
+                    alt="Ollas y sartén del Cooking System Royal Prestige"
+                    fill
+                    preload
+                    sizes="(max-width: 1024px) 90vw, 40vw"
+                    className="object-cover object-[50%_75%]"
+                  />
+                </div>
+              </div>
+              <aside className="mt-6 flex items-start gap-4 border-t border-[var(--color-steel)]/30 pt-5">
+                <Image
+                  src="/assets/brand/rr-logo.png"
+                  alt="RR All Services"
+                  width={152}
+                  height={182}
+                  className="h-16 w-auto shrink-0"
+                />
+                <div>
+                  <p className="text-sm leading-relaxed text-[var(--color-graphite)]">
+                    Distribuidor Autorizado Independiente de Royal Prestige®.
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--color-steel)]">
+                    Un primer contacto para informarse, aclarar sus dudas y decidir con calma.
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
         </Container>
       </Section>

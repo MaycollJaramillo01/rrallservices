@@ -11,12 +11,14 @@ import { RRAllServicesStory } from "./RRAllServicesStory";
 import { TrajectoryData } from "./TrajectoryData";
 import { DemoConversionSection } from "./DemoConversionSection";
 import { OpportunityInvitation } from "./OpportunityInvitation";
+import { InstagramCarousel } from "./InstagramCarousel";
 
 export function HomePage() {
   return (
     <main>
       <HeroEditorial />
       <BrandStatement />
+      <InstagramCarousel />
       <FrescaFlowStory />
       <ProductDiscoveryRail />
       <CategoryArchitecture />
