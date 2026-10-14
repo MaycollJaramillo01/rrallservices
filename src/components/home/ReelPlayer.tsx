@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import Image from "next/image";
 
 type ReelPlayerProps = {
   id: string;
@@ -122,8 +123,16 @@ export function ReelPlayer({ id, title, duration: initialDuration, onPlay }: Ree
       role={expanded ? "dialog" : undefined}
       aria-modal={expanded ? true : undefined}
       aria-label={expanded ? `Reproductor: ${title}` : undefined}
-      className={`reel-player group overflow-hidden bg-[#14243a] text-white shadow-[0_8px_28px_rgb(27_58_107/0.1)] ${expanded ? "fixed inset-0 z-[70] h-[100dvh] w-full" : "relative aspect-[9/16] rounded-[18px]"}`}
+      className={`reel-player group overflow-hidden bg-[#14243a] text-white shadow-[0_8px_28px_rgb(27_58_107/0.1)] ${expanded ? "fixed inset-0 z-[70] h-[100dvh] w-full" : "relative aspect-[9/16] rounded-[18px] lg:aspect-auto lg:h-[min(680px,70svh)]"}`}
     >
+      <Image
+        src={`/assets/instagram/${id}.jpg`}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="(max-width: 1024px) 85vw, 33vw"
+        className="pointer-events-none scale-110 object-cover opacity-35 blur-2xl"
+      />
       <video
         ref={videoRef}
         playsInline

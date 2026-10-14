@@ -34,11 +34,13 @@ export function InstagramCarousel() {
   useEffect(() => {
     const rail = railRef.current;
     if (!rail) return;
-    const update = () =>
+    const update = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches) rail.scrollLeft = 0;
       setPosition({
         first: rail.scrollLeft <= 2,
         last: rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 2,
       });
+    };
     const observer = new ResizeObserver(update);
     observer.observe(rail);
     rail.addEventListener("scroll", update, { passive: true });
@@ -74,13 +76,13 @@ export function InstagramCarousel() {
 
   return (
     <Section padding="lg" background="porcelain" aria-labelledby="instagram-title">
-      <Container padding="lg" maxWidth="md">
+      <Container padding="md" maxWidth="full">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
               En Instagram · @kr.prestige
             </p>
-            <Heading id="instagram-title" as="h2" size="h2" font="display">
+            <Heading id="instagram-title" as="h2" size="h2" font="display" className="scroll-mt-28">
               Vea nuestros últimos videos
             </Heading>
             <a
@@ -92,7 +94,7 @@ export function InstagramCarousel() {
               Seguir a @kr.prestige ↗
             </a>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 lg:hidden">
             <button
               type="button"
               aria-label="Video anterior"
@@ -122,13 +124,13 @@ export function InstagramCarousel() {
           aria-label="Carrusel de videos de Instagram"
           aria-roledescription="carrusel"
           tabIndex={0}
-          className="reels-rail flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain pb-5 focus-visible:outline-2 focus-visible:outline-offset-4 sm:gap-6"
+          className="reels-rail flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain pb-5 focus-visible:outline-2 focus-visible:outline-offset-4 sm:gap-6 lg:grid lg:grid-cols-3 lg:gap-8 lg:overflow-visible"
         >
           {reels.map((reel, index) => (
             <article
               key={reel.id}
               aria-label={`${index + 1} de ${reels.length}: ${reel.title}`}
-              className="w-[85%] shrink-0 snap-start sm:w-[46%] lg:w-[36%]"
+              className="w-[85%] shrink-0 snap-start sm:w-[46%] lg:w-auto lg:min-w-0"
             >
               <ReelPlayer
                 id={reel.id}

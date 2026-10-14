@@ -8,7 +8,7 @@ La home incluye tres reels de @kr.prestige descargados y servidos desde `public/
 - https://www.instagram.com/reel/Dd6_IAlicUE/ — 21 segundos.
 - https://www.instagram.com/reel/Ddj2w1rgopx/ — 20 segundos.
 
-Los archivos usan MP4 con video H.264 a 720 × 1280 y audio AAC. Cada portada es un fotograma del video correspondiente. El carrusel permite avanzar con flechas, teclado o desplazamiento táctil; carga el video al reproducirlo y pausa los otros videos. Cada pieza enlaza a su publicación original.
+Los archivos usan MP4 con video H.264 a 720 × 1280 y audio AAC. Cada portada es un fotograma del video correspondiente. La sección ocupa todo el ancho disponible. En escritorio presenta los tres videos completos en columnas; en móvil permite avanzar con flechas, teclado o desplazamiento táctil; carga el video al reproducirlo y pausa los otros videos. Cada pieza enlaza a su publicación original.
 
 El reproductor incorpora botón central, controles de play/pausa, barra de progreso con búsqueda, tiempo, silencio y una vista ampliada que ocupa el navegador. La vista ampliada permite cerrar con su botón o Escape, conserva la reproducción, contiene el foco del teclado y bloquea el desplazamiento de la página de fondo.
 
