@@ -12,7 +12,7 @@ Los archivos usan MP4 con video H.264 a 720 × 1280 y audio AAC. Cada portada es
 
 El reproductor incorpora botón central, controles de play/pausa, barra de progreso con búsqueda, tiempo, silencio y una vista ampliada que ocupa el navegador. La vista ampliada permite cerrar con su botón o Escape, conserva la reproducción, contiene el foco del teclado y bloquea el desplazamiento de la página de fondo.
 
-El hero de `/trabaja-con-nosotros` incluye las dos imágenes proporcionadas por el usuario, conservadas en `public/assets/opportunity`, y la imagen de productos existente `cocina-bateria-main.jpg`. Los cambios de la página se limitan a su hero.
+El hero de `/trabaja-con-nosotros` reemplaza la composición anterior por un carrusel infinito con las nueve imágenes proporcionadas por el usuario, conservadas en `public/assets/opportunity`. Avanza automáticamente cada 4,5 segundos, permite navegar en ambas direcciones y pausar, y vuelve al inicio sin un salto visible. El movimiento se pausa al pasar el cursor o enfocar los controles y respeta la preferencia de movimiento reducido. Los cambios de la página se limitan a su hero.
 
 Validación: compilación de producción, TypeScript, ESLint de los archivos modificados y revisión en navegador de escritorio y móvil. Capturas en `C:/Users/Mayco/Desktop/ROYALPRESTIGE/tmp/review/instagram-opportunity`.
 
