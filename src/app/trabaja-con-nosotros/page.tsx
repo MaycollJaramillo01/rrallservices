@@ -12,9 +12,9 @@ import { createMetadata } from "@/config/seo";
 import { OPORTUNIDAD_FUENTE } from "@/lib/lead-schema";
 
 export const metadata = createMetadata({
-  title: "Trabaja con nosotros — Oportunidad Royal",
+  title: "Forma parte de nuestro equipo — Oportunidad Royal",
   description:
-    "Conozca la oportunidad de negocio vinculada a Royal Prestige® con RR All Services en New York. Solicite información y converse con el equipo.",
+    "Forma parte de nuestro equipo en RR All Services. Explore la Oportunidad Royal, conozca el modelo de negocio independiente y dé el primer paso en New York.",
   pathname: "/trabaja-con-nosotros",
 });
 
@@ -56,6 +56,25 @@ const steps = [
   ],
 ];
 
+const opportunityReasons = [
+  [
+    "Un proyecto propio",
+    "Explore un modelo de distribución independiente para construir una actividad comercial, desarrollar relaciones con sus clientes y definir sus objetivos como emprendedor.",
+  ],
+  [
+    "Productos para la vida cotidiana",
+    "Conozca un catálogo de sistemas de cocina, electrodomésticos y soluciones de filtración Royal Prestige®. Las demostraciones acercan sus características y uso a cada cliente.",
+  ],
+  [
+    "Opciones de financiamiento",
+    "El modelo de Royal Prestige® contempla financiamiento de compras para clientes. Consulte los requisitos, la aprobación y las condiciones que correspondan a cada operación.",
+  ],
+  [
+    "Entrega directa al cliente",
+    "Royal Prestige® contempla el envío de los pedidos directamente a los clientes. Conozca cómo se coordinan las órdenes y qué cargos por servicios pueden aplicar.",
+  ],
+];
+
 export default function OpportunityPage() {
   return (
     <main>
@@ -70,15 +89,19 @@ export default function OpportunityPage() {
                 RR All Services · New York
               </p>
               <Heading as="h1" size="h1" font="display" className="max-w-4xl text-balance">
-                Trabaja con nosotros
+                Forma parte de nuestro equipo
               </Heading>
               <Heading as="h2" size="h3" font="display" className="mt-5 max-w-2xl">
-                Conozca la Oportunidad Royal con RR All Services
+                Dé el primer paso hacia su próximo proyecto
               </Heading>
               <Text size="lead" className="mt-6 max-w-2xl">
-                Si le interesa desarrollar una actividad comercial vinculada a Royal Prestige®,
-                solicite información para conocer la oportunidad con el equipo de RR All Services en
-                New York.
+                En RR All Services queremos conocer a personas con iniciativa, interés por las
+                ventas y ganas de emprender. Descubra la Oportunidad Royal y cómo puede desarrollar
+                una actividad comercial independiente vinculada a Royal Prestige® en New York.
+              </Text>
+              <Text className="mt-4 max-w-2xl leading-relaxed">
+                Conozca los productos, la dinámica del equipo y los pasos para comenzar. Estamos
+                aquí para conversar sobre sus objetivos y responder sus preguntas.
               </Text>
               <Button as={Link} href="#solicitar-informacion" size="lg" className="mt-8">
                 Quiero conocer la oportunidad
@@ -134,7 +157,7 @@ export default function OpportunityPage() {
             </Text>
             <a
               className="inline-block text-sm text-[var(--color-deep-royal-blue)] underline underline-offset-4"
-              href="https://www.royalprestige.com/en-us/business"
+              href="https://www.royalprestige.com/negocio/por-que-elegirnos"
             >
               Conozca el modelo en el sitio oficial de Royal Prestige®
             </a>
@@ -143,10 +166,46 @@ export default function OpportunityPage() {
       </Section>
 
       <Section padding="lg" background="mist">
+        <Container padding="lg">
+          <div className="max-w-3xl">
+            <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
+              02 · La oportunidad
+            </p>
+            <Heading size="h2" font="display">
+              Más razones para dar el primer paso
+            </Heading>
+            <Text size="lead" className="mt-6">
+              Emprender comienza por entender el modelo. Conozca algunos de los elementos que
+              presenta Royal Prestige® y converse con nosotros sobre cómo se desarrolla la actividad
+              en RR All Services.
+            </Text>
+          </div>
+          <dl className="mt-10 grid gap-x-12 gap-y-8 md:grid-cols-2">
+            {opportunityReasons.map(([title, description]) => (
+              <div key={title} className="border-t border-[var(--color-steel)]/30 pt-6">
+                <dt className="font-display text-2xl leading-tight text-[var(--color-ink)]">
+                  {title}
+                </dt>
+                <dd className="mt-4 max-w-xl leading-relaxed text-[var(--color-graphite)]">
+                  {description}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <a
+            className="mt-8 inline-block text-sm text-[var(--color-deep-royal-blue)] underline underline-offset-4"
+            href="https://www.royalprestige.com/negocio/por-que-elegirnos"
+          >
+            Explore por qué elegir Royal Prestige® en su sitio oficial →
+          </a>
+        </Container>
+      </Section>
+
+      <Section padding="lg">
         <Container padding="lg" className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-              02 · Su interés
+              03 · Su interés
             </p>
             <Heading size="h2" font="display">
               Para quienes quieren explorar el emprendimiento
@@ -177,10 +236,10 @@ export default function OpportunityPage() {
         </Container>
       </Section>
 
-      <Section padding="lg">
+      <Section padding="lg" background="mist">
         <Container padding="lg">
           <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-            03 · Cómo comenzar
+            04 · Cómo comenzar
           </p>
           <Heading size="h2" font="display">
             El primer paso es una conversación
@@ -220,7 +279,7 @@ export default function OpportunityPage() {
           </div>
           <div className="lg:col-span-7">
             <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-              04 · El equipo
+              05 · El equipo
             </p>
             <Heading size="h2" font="display">
               Kellyn Reyes y el equipo de RR All Services
@@ -248,7 +307,7 @@ export default function OpportunityPage() {
         <Container padding="lg" className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-              05 · Sus preguntas
+              06 · Sus preguntas
             </p>
             <Heading size="h2" font="display">
               Información para decidir
@@ -278,14 +337,14 @@ export default function OpportunityPage() {
         <Container padding="lg" className="grid gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-              06 · Solicitar información
+              07 · Solicitar información
             </p>
             <Heading id="opportunity-form-title" size="h2" font="display">
-              Hablemos de la Oportunidad Royal
+              Su próximo paso comienza aquí
             </Heading>
             <Text size="lead" className="mt-6">
-              Deje sus datos para que RR All Services pueda responder sus preguntas sobre la
-              oportunidad de negocio.
+              Cuéntenos sobre su interés en formar parte de nuestro equipo. Deje sus datos y
+              conversemos sobre sus objetivos, la Oportunidad Royal y los siguientes pasos.
             </Text>
             <Text className="mt-4 leading-relaxed">
               Este formulario es para conocer la oportunidad. Si desea una presentación de

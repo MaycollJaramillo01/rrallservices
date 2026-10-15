@@ -11,7 +11,7 @@ export function OpportunityInvitation() {
       <Container padding="lg" className="grid items-center gap-8 lg:grid-cols-12">
         <div className="lg:col-span-8">
           <p className="mb-4 text-[11px] tracking-[0.2em] text-[var(--color-steel)] uppercase">
-            Trabaja con nosotros
+            Forma parte de nuestro equipo
           </p>
           <Heading size="h2" font="display">
             ¿Le interesa emprender con RR All Services?

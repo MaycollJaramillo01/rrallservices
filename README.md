@@ -2,7 +2,7 @@
 
 Sitio de RR All Services, Distribuidor Autorizado Independiente de Royal Prestige® en New York.
 Es un catálogo informativo: no vende en línea, su conversión es la **solicitud de demostración**.
-La sección «Trabaja con nosotros» en `/trabaja-con-nosotros` permite solicitar información sobre la actividad comercial
+La sección «Forma parte de nuestro equipo» en `/trabaja-con-nosotros` permite solicitar información sobre la actividad comercial
 independiente y mantiene estas consultas separadas de las demostraciones.
 
 Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · TypeScript.
