@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppBubble } from "@/components/layout/WhatsAppBubble";
@@ -72,6 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="pt-16 lg:pt-20">{children}</div>
         <Footer />
         <WhatsAppBubble />
+        <Analytics />
       </body>
     </html>
   );
