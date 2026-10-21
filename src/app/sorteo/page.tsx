@@ -20,12 +20,15 @@ const sorteo = {
 
 export const metadata: Metadata = createMetadata({
   title: `Sorteo: ${sorteo.premio} en New York`,
-  description: `Participe por una ${sorteo.premio}. Complete sus nombres, apellidos, dirección y teléfono. Sin compra y sin compromiso.`,
+  description: `Participe por una ${sorteo.premio}. Complete sus nombres, apellidos, dirección, email y teléfono. Sin compra y sin compromiso.`,
   pathname: "/sorteo",
 });
 
 const steps = [
-  ["Complete el formulario", "Nombres, apellidos, dirección y teléfono. Toma menos de un minuto."],
+  [
+    "Complete el formulario",
+    "Nombres, apellidos, dirección, email y teléfono. Toma menos de un minuto.",
+  ],
   ["Su participación queda registrada", "No tiene que comprar nada ni asistir a una demostración."],
   ["Si gana, le llamamos", "Al número que registró, para coordinar la entrega de su plancha."],
 ];
@@ -42,7 +45,7 @@ const bases = [
   ],
   [
     "Cómo participar",
-    `Completar el formulario de esta página con nombres, apellidos, dirección y número de teléfono entre el 1 y el 31 de octubre. Una participación por persona.`,
+    `Completar el formulario de esta página con nombres, apellidos, dirección, email y número de teléfono entre el 1 y el 31 de octubre. Una participación por persona.`,
   ],
   ["Periodo de participación", `${sorteo.periodoParticipacion}.`],
   [

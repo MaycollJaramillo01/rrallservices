@@ -3,7 +3,7 @@
 // ponytail: sin framework de test; si cambia la lógica de src/lib/ghl.ts, esto debe fallar.
 import assert from "node:assert/strict";
 import { sendLeadToGhl } from "../src/lib/ghl.ts";
-import { opportunitySchema } from "../src/lib/lead-schema.ts";
+import { opportunitySchema, sorteoSchema } from "../src/lib/lead-schema.ts";
 
 const lead = {
   nombre: "Ana",
@@ -127,24 +127,26 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
   assert.match(errors[0], /Conversations/);
 }
 
-// Sorteo: sin email, con dirección; fuente "Sorteo / Rifa" y sin paso por la bandeja.
+// Sorteo: dirección y email obligatorios; fuente "Sorteo / Rifa" y, como el
+// resto, mensaje entrante para que salga en Conversations.
 {
   const ghl = fakeGhl();
-  const { nombre, apellido, telefono, consentimiento, consentimientoSms } = lead;
-  await sendLeadToGhl(
-    {
-      nombre,
-      apellido,
-      telefono,
-      consentimiento,
-      consentimientoSms,
-      direccion: "5030 Broadway Apt 2, New York, NY 10034",
-      fuente: "sorteo-plancha-innove",
-    },
-    ghl.fetch,
-  );
+  const { nombre, apellido, email, telefono, consentimiento, consentimientoSms } = lead;
+  const participante = {
+    nombre,
+    apellido,
+    email,
+    telefono,
+    consentimiento,
+    consentimientoSms,
+    direccion: "5030 Broadway Apt 2, New York, NY 10034",
+    fuente: "sorteo-plancha-innove",
+  };
+  assert.equal(sorteoSchema.safeParse(participante).success, true);
+  assert.equal(sorteoSchema.safeParse({ ...participante, email: "" }).success, false);
+  await sendLeadToGhl(participante, ghl.fetch);
   const [upsert, tags, note] = ghl.calls;
-  assert.equal(upsert.body.email, undefined);
+  assert.equal(upsert.body.email, email);
   assert.equal(upsert.body.address1, "5030 Broadway Apt 2, New York, NY 10034");
   assert.equal(upsert.body.source, "Sorteo / Rifa");
   assert.deepEqual(upsert.body.customFields, [
@@ -154,7 +156,8 @@ process.env.GHL_PRIVATE_INTEGRATION = "token-de-prueba";
   assert.match(note.body.body, /Dirección: 5030 Broadway/);
   const opportunity = ghl.calls.find((c) => c.path === "/opportunities/");
   assert.equal(opportunity.body.source, "Sorteo / Rifa");
-  assert.ok(!ghl.calls.some((c) => c.path.startsWith("/conversations")));
+  const inbound = ghl.calls.find((c) => c.path === "/conversations/messages/inbound");
+  assert.equal(inbound.body.emailFrom, email);
 }
 
 // Un error de GHL se propaga para que /api/leads lo registre.
