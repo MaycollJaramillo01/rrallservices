@@ -158,9 +158,6 @@ export async function sendLeadToGhl(
   // no aparecería en la bandeja. La solicitud se guarda como email entrante: sale
   // sin leer en Team inbox y no se envía nada a nadie. Es un añadido al CRM, así
   // que un fallo aquí no puede dar el lead por perdido.
-  // ponytail: el sorteo no pide email, así que sus participantes no llegan a la
-  // bandeja (se filtran por la etiqueta). Si se quieren ahí, registrarlos como SMS.
-  if (!lead.email) return "sent";
   try {
     const { conversations } = await call<{ conversations: { id: string }[] }>(
       "GET",

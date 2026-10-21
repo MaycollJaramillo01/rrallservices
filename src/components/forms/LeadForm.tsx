@@ -19,7 +19,7 @@ import { siteConfig } from "@/config/site";
 interface LeadFormProps {
   fuente: string;
   // "contacto" pide motivo y mensaje; "demostracion" solo los datos básicos;
-  // "sorteo" cambia email, producto y mensaje por la dirección.
+  // "sorteo" cambia producto y mensaje por la dirección.
   variant?: "demostracion" | "contacto" | "sorteo" | "oportunidad";
   defaultProduct?: string;
   submitLabel?: string;
@@ -55,7 +55,7 @@ export function LeadForm({
     formState: { errors },
     reset,
   } = useForm<LeadSchemaType | OpportunitySchemaType>({
-    // El sorteo no pide email: su esquema lo deja opcional, de ahí el cast.
+    // Los esquemas comparten campos y solo cambian cuáles son obligatorios.
     resolver: zodResolver(
       isOpportunity
         ? opportunitySchema
@@ -202,23 +202,21 @@ export function LeadForm({
         </div>
       )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {!isSorteo && (
-          <div>
-            <label className={labelClass} htmlFor={id("email")}>
-              {isOpportunity ? "Correo electrónico" : "Email"}
-            </label>
-            <input
-              id={id("email")}
-              type="email"
-              autoComplete="email"
-              required={isOpportunity}
-              {...register("email")}
-              {...a11y("email")}
-              className={inputClass}
-            />
-            {fieldError("email")}
-          </div>
-        )}
+        <div>
+          <label className={labelClass} htmlFor={id("email")}>
+            {isOpportunity ? "Correo electrónico" : "Email"}
+          </label>
+          <input
+            id={id("email")}
+            type="email"
+            autoComplete="email"
+            required={isOpportunity}
+            {...register("email")}
+            {...a11y("email")}
+            className={inputClass}
+          />
+          {fieldError("email")}
+        </div>
         <div>
           <label className={labelClass} htmlFor={id("telefono")}>
             {isSorteo ? "Número de teléfono" : "Teléfono"}

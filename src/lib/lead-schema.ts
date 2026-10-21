@@ -30,11 +30,10 @@ export const contactSchema = leadSchema.extend({
   mensaje: z.string(askMessage).trim().min(10, askMessage).max(2000),
 });
 
-// Sorteo (/sorteo): sin email; la dirección es obligatoria para confirmar la
-// zona y entregar el premio. /api/leads usa este esquema solo con esta fuente.
+// Sorteo (/sorteo): la dirección es obligatoria para confirmar la zona y
+// entregar el premio. /api/leads usa este esquema solo con esta fuente.
 export const SORTEO_FUENTE = "sorteo-plancha-innove";
 export const sorteoSchema = leadSchema.extend({
-  email: z.string().trim().email("Email inválido").optional(),
   direccion: z.string().trim().min(8, "Escriba su dirección completa").max(200),
 });
 

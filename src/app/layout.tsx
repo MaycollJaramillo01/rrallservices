@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppBubble } from "@/components/layout/WhatsAppBubble";
@@ -74,6 +75,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <WhatsAppBubble />
         <Analytics />
+        {/* Tracking externo de GHL: páginas vistas y envíos de formularios. */}
+        <Script
+          id="ghl-external-tracking"
+          src="https://link.msgsndr.com/js/external-tracking.js"
+          data-tracking-id="tk_7a33a64ef27846bb9f531099ff4e7746"
+        />
       </body>
     </html>
   );
