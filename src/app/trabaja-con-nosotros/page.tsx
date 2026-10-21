@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LeadForm } from "@/components/forms/LeadForm";
 import { OpportunityHeroCarousel } from "@/components/home/OpportunityHeroCarousel";
+import { DistributorBadge } from "@/components/layout/DistributorBadge";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
@@ -124,6 +125,7 @@ export default function OpportunityPage() {
                   <p className="mt-2 text-sm leading-relaxed text-[var(--color-steel)]">
                     Un primer contacto para informarse, aclarar sus dudas y decidir con calma.
                   </p>
+                  <DistributorBadge className="mt-4 h-10 w-auto" />
                 </div>
               </aside>
             </div>

@@ -2,6 +2,7 @@ import { Section } from "@/components/ui/Section";
 import { Container } from "@/components/ui/Container";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { DistributorBadge } from "@/components/layout/DistributorBadge";
 
 export function BrandStatement() {
   return (
@@ -21,6 +22,7 @@ export function BrandStatement() {
               Con 5 años de experiencia como distribuidor autorizado en New York, ofrecemos asesoría
               personalizada para que conozca directamente cada sistema.
             </Text>
+            <DistributorBadge className="mt-8 h-10 w-auto" />
           </div>
         </div>
       </Container>
