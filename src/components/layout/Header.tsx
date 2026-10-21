@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BrandWordmark } from "./BrandWordmark";
+import { DistributorBadge } from "./DistributorBadge";
 import { Navigation } from "./Navigation";
 import { navigationConfig } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
@@ -14,7 +15,12 @@ export function Header() {
     <header className="fixed top-0 right-0 left-0 z-40 border-b border-[var(--color-steel)] bg-[var(--color-pure-white)]">
       <div className="mx-auto max-w-[1480px] px-6 sm:px-8 lg:px-[64px] xl:px-[88px]">
         <div className="flex h-16 items-center justify-between lg:h-20">
-          <BrandWordmark />
+          <div className="flex items-center gap-4">
+            <BrandWordmark />
+            <div className="hidden border-l border-[var(--color-steel)]/40 pl-4 md:block">
+              <DistributorBadge className="h-8 w-auto" />
+            </div>
+          </div>
           <nav className="hidden items-center gap-5 xl:flex">
             {navigationConfig.main.map((item) => (
               <Link

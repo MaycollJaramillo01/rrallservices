@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
+import { DistributorBadge } from "@/components/layout/DistributorBadge";
 import { companyData } from "@/data/company";
 import { verificationData } from "@/data/verification";
 import { siteConfig } from "@/config/site";
@@ -60,6 +61,7 @@ export default function NosotrosPage() {
               <Text as="p" className="mt-2 text-[var(--color-steel)]">
                 Fundadora · {companyData.role}
               </Text>
+              <DistributorBadge className="mt-5 h-10 w-auto" />
               <Text as="p" className="mt-6">
                 Con {companyData.experienceYears} años como distribuidora autorizada en{" "}
                 {companyData.location}, {companyData.founder} ha acompañado a miles de familias en

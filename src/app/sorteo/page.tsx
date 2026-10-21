@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { LeadForm } from "@/components/forms/LeadForm";
+import { DistributorBadge } from "@/components/layout/DistributorBadge";
 import { SORTEO_FUENTE } from "@/lib/lead-schema";
 import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/config/seo";
@@ -235,6 +236,7 @@ export default function SorteoPage() {
               </a>
               , donde anunciamos el sorteo.
             </p>
+            <DistributorBadge className="mt-6 h-10 w-auto" />
           </div>
           <div className="self-end border-l-2 border-[var(--color-ink)] pl-6 lg:col-span-4 lg:col-start-9">
             <p className="font-medium text-[var(--color-deep-royal-blue)]">

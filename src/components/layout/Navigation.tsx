@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { navigationConfig } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
+import { DistributorBadge } from "./DistributorBadge";
 
 interface NavigationProps {
   isOpen: boolean;
@@ -85,6 +86,7 @@ export function Navigation({ isOpen, onClose }: NavigationProps) {
           >
             {siteConfig.phone}
           </a>
+          <DistributorBadge className="mt-8 h-10 w-auto" />
         </div>
       </div>
     </div>,
