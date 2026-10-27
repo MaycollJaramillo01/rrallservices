@@ -4,6 +4,7 @@ import { Section } from "@/components/ui/Section";
 import { Heading } from "@/components/ui/Heading";
 import { Text } from "@/components/ui/Text";
 import { LeadForm } from "@/components/forms/LeadForm";
+import { DistributorBadge } from "@/components/layout/DistributorBadge";
 import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/config/seo";
 
@@ -66,6 +67,7 @@ export default function ContactoPage() {
               <Text as="p" size="sm">
                 {siteConfig.legalRelationship}. Operado por {siteConfig.legalName}.
               </Text>
+              <DistributorBadge className="mt-4 h-10 w-auto" />
             </div>
           </div>
 

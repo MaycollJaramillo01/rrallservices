@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { categories } from "@/data/categories";
+import { DistributorBadge } from "./DistributorBadge";
 
 const infoLinks = [
   { href: "/nosotros", label: "Nuestra historia" },
@@ -55,6 +56,7 @@ export function Footer() {
             <p className="max-w-sm text-sm leading-relaxed text-white/70">
               {siteConfig.legalRelationship} en {siteConfig.serviceArea}.
             </p>
+            <DistributorBadge className="mt-5 h-8 w-auto" />
             <Link
               href="/demostraciones"
               className="mt-6 inline-flex items-center border border-white/40 px-6 py-3 text-sm font-medium transition-colors hover:border-[var(--color-pure-white)]"
